@@ -1,16 +1,16 @@
 {
   "run": "reference",
-  "commit": "670f9788ea0462a7f3f7180c8b72632591645c6f",
-  "dirty": true,
+  "commit": "cf54d5346c92edeb95e810fb6a9d0de3d5d68fc5",
+  "dirty": false,
   "mock": true,
   "settings": {
-    "BATON_ARMS": "vision:kimi-k2.6,vision:qwen3.8-27b,baton:kimi-k2.6,pilot",
-    "BATON_MOCK": "1",
-    "BATON_PER_SCREEN": "2",
-    "BATON_REPEATS": "2",
-    "BATON_SCREENS": "2",
-    "BATON_T3_PER_SCREEN": "1",
-    "BATON_TASKS": "mail-archive"
+    "DO_ARMS": "vision:kimi-k2.6,vision:qwen3.8-27b,baton:kimi-k2.6,pilot",
+    "DO_MOCK": "1",
+    "DO_PER_SCREEN": "2",
+    "DO_REPEATS": "2",
+    "DO_SCREENS": "2",
+    "DO_T3_PER_SCREEN": "1",
+    "DO_TASKS": "mail-archive"
   },
   "clefModels": {
     "clef": "@cf/cloudflare/clef",
@@ -19,7 +19,8 @@
   },
   "llmModels": {
     "kimi-k2.6": "@cf/moonshotai/kimi-k2.6",
-    "qwen3.8-27b": "@cf/qwen/qwen3.8-27b"
+    "qwen3.8-27b": "@cf/qwen/qwen3.8-27b",
+    "claude-opus-5-5": "claude-opus-5-5"
   },
   "fixture": "evals/fixtures/app.html"
 }
