@@ -65,6 +65,22 @@ bun run bench   # 3 repeats, all arms; writes evals/runs/<id>/
 
 `bun run bench:verify` checks that the README table matches the committed run, that the history is clean, and that a fresh clone reproduces the mock reference.
 
+## Harder tasks: paraphrased values
+
+The `hard` set (10 tasks) gives values in plain language instead of quotes: "my work address: jordan at cloudflare dot com", "a one-word thank-you", "Japanese". Two more arms handle them:
+
+- **`duet`:** Clef plus Clairic. Clairic pulls typed values out of the task. Clef picks every dropdown option itself, because each option is listed as an action. Clairic is extractive: it can only return text that already appears in the task, so it cannot turn "jordan at cloudflare dot com" into an email address, write "Thanks!", or join "Jordan" and "C".
+- **`relay:<model>`:** duet plus a gate. Before the run, Clef answers one yes/no question: does this task need text that is not in it word for word? If yes, a large model writes the field values once. Clef still chooses and clicks every action.
+
+All 30 tasks, 3 repeats ([`evals/runs/bench-3/REPORT.md`](evals/runs/bench-3/REPORT.md)):
+
+| arm | tasks finished | claimed done but failed | cost per task |
+|---|---|---|---|
+| `duet` | 25/30 | 12 | $0.0015 |
+| `relay:kimi-k2.6` | **30/30** | 0 | $0.0016 |
+
+The gate scored 0.51 to 0.95 on the seven tasks that need written text and 0.06 or less on all others, except `files-folder` (0.54, a false positive that still passed). Two true positives sit close to the 0.5 threshold, so the gate is the weakest link. `bench-2` compares duet with Opus arms on the same 30 tasks.
+
 ## What this does not show
 
 - **The test app is easy for code to read.** Every control has an accessibility label. Real apps with canvas UIs, unlabelled icons or misleading labels are not tested, and that is where listing controls is hardest.

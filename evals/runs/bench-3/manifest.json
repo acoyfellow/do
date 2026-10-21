@@ -1,0 +1,25 @@
+{
+  "run": "bench-3",
+  "commit": "7d5fde4bd38440dfce0147c7f11ed0756db836d2",
+  "dirty": true,
+  "mock": false,
+  "settings": {
+    "DO_ARMS": "duet,relay:kimi-k2.6",
+    "DO_ONLY_TESTS": "t4-e2e",
+    "DO_REPEATS": "3",
+    "DO_SKIP_CACHE": "1",
+    "DO_T4_CONC": "24",
+    "DO_TASK_SET": "all"
+  },
+  "clefModels": {
+    "clef": "@cf/cloudflare/clef",
+    "clef-flash": "@cf/cloudflare/clef-flash",
+    "clef-omni": "@cf/cloudflare/clef-omni"
+  },
+  "llmModels": {
+    "kimi-k2.6": "@cf/moonshotai/kimi-k2.6",
+    "qwen3.8-27b": "@cf/qwen/qwen3.8-27b",
+    "claude-opus-5-5": "claude-opus-5-5"
+  },
+  "fixture": "evals/fixtures/app.html"
+}

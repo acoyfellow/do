@@ -322,6 +322,78 @@ async function duet(page: Page, task: Task, r: Run) {
   return clefLoop(page, task, r, (session, cands) => clairicFieldValues(page, session, task, r, cands, cache));
 }
 
+async function needsGeneratedText(task: Task, r: Run): Promise<boolean> {
+  const res = await Effect.runPromise(
+    ask(t, {
+      model: MODEL,
+      state: { task: task.text },
+      questions: {
+        generate: {
+          type: 'noul',
+          instructions:
+            'Does completing `task` require typing text that does not appear word for word in the task, such as a composed message, a reformatted address, or words combined from several parts?',
+        },
+      },
+    }),
+  );
+  r.clefUsd += res.costUsd;
+  const answer = res.answers.generate;
+  const p = answer?.type === 'noul' ? answer.p : 0;
+  r.trace.push({ gate: 'needsGeneratedText', p });
+  return p >= TAU;
+}
+
+async function generatedFieldValues(page: Page, task: Task, r: Run, fields: Candidate[]): Promise<Map<Candidate, string[]>> {
+  const labels = fields.map((c, i) => `${fieldKey(i)}: ${c.role} "${c.name}"`).join('\n');
+  const res = await Effect.runPromise(
+    chat(
+      t,
+      r.planner as LlmModel,
+      [
+        {
+          role: 'system',
+          content:
+            'You write the exact text to type into form fields so a user task gets done. Reply with only a JSON object mapping each field key to the final text, or null when the task does not involve that field.',
+        },
+        { role: 'user', content: `Task: ${task.text}\nFields on screen:\n${labels}` },
+      ],
+      { maxTokens: 400, thinking: THINKING },
+    ),
+  );
+  r.llmUsd += res.costUsd;
+  r.llmIn += res.inputTokens;
+  r.llmOut += res.outputTokens;
+  const answers = (firstJson(res.text) ?? {}) as Record<string, unknown>;
+  const result = new Map<Candidate, string[]>();
+  fields.forEach((c, i) => {
+    const value = answers[fieldKey(i)];
+    const text = typeof value === 'string' && value.trim() ? value : null;
+    result.set(c, text ? [text] : []);
+    r.trace.push({ generated: c.name, value: text });
+  });
+  const filled = fields.map((c) => [c.name, result.get(c)?.[0]] as const).filter(([, v]) => v);
+  await hud(page, { title: `Writer (${r.planner})`, status: filled.length ? filled.map(([n, v]) => `${n}: "${v}"`).join(' · ') : 'No values needed on this screen' });
+  return result;
+}
+
+async function relay(page: Page, task: Task, r: Run) {
+  const generate = await needsGeneratedText(task, r);
+  const clairicCache = new Map<string, string[]>();
+  const generatedCache = new Map<string, string[]>();
+  return clefLoop(page, task, r, async (session, cands) => {
+    const values = await clairicFieldValues(page, session, task, r, cands, clairicCache);
+    if (!generate) return values;
+    const textFields = cands.filter((c) => c.role === 'textbox' || c.role === 'searchbox');
+    const fresh = textFields.filter((c) => !generatedCache.has(`${c.role}:${c.name}`));
+    if (fresh.length) {
+      const generated = await generatedFieldValues(page, task, r, fresh);
+      for (const [c, v] of generated) generatedCache.set(`${c.role}:${c.name}`, v);
+    }
+    for (const c of textFields) values.set(c, generatedCache.get(`${c.role}:${c.name}`) ?? []);
+    return values;
+  });
+}
+
 type FieldValues = (session: CDPSession, cands: Candidate[]) => Promise<Map<Candidate, string[]>>;
 
 async function pilot(page: Page, task: Task, r: Run) {
@@ -407,7 +479,7 @@ async function clefLoop(page: Page, task: Task, r: Run, fieldValues: FieldValues
   }
 }
 
-const ARM_FNS: Record<string, (p: Page, t: Task, r: Run) => Promise<void>> = { vision, baton, plan: baton, pilot, duet };
+const ARM_FNS: Record<string, (p: Page, t: Task, r: Run) => Promise<void>> = { vision, baton, plan: baton, pilot, duet, relay };
 
 const jobs = [...TASKS.map((b) => ({ b, inj: false })), ...TASKS.filter((b) => INJ_TASKS.includes(b.id)).map((b) => ({ b, inj: true }))].filter(
   (j) => !ONLY || ONLY.includes(j.b.id),
@@ -445,7 +517,7 @@ await pool(runs, Number(process.env.DO_T4_CONC ?? 40), async ({ arm: armSpec, re
   try {
     await (ARM_FNS[arm] as (p: Page, t: Task, r: Run) => Promise<void>)(page, task, r);
   } catch (e) {
-    r.error = String((e as Error).message).slice(0, 300);
+    r.error = String((e as { reason?: string }).reason || (e as Error).message || e).slice(0, 300);
   }
   r.ms = performance.now() - t0;
   if (RECORD_DIR) {
