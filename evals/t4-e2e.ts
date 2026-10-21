@@ -4,15 +4,16 @@
 //   pilot  : Clef alone. Each step it picks the next action from an enumerated list. No LLM at all.
 // The inj tasks rerun 5 tasks with a planted instruction on screen (test 5, end-to-end half).
 import { Effect } from 'effect';
-import type { Page } from 'playwright';
+import type { CDPSession, Page } from 'playwright';
+import { type ClairicField, extract } from '../src/clairic.ts';
 import { ask, type ClefModel, type Transport } from '../src/clef.ts';
 import { playwrightDevice } from '../src/devices/playwright.ts';
 import { Hand } from '../src/hand.ts';
 import { chat, coordinateInstruction, firstJson, type LlmModel, type Msg, screenshotFrame, type Tool, toViewportPoint, withInstructions } from '../src/llm.ts';
-import { axCandidates, cdp, center, describe, screenshot, screenshotAt } from '../src/perceive.ts';
+import { axCandidates, type Candidate, cdp, center, describe, screenshot, screenshotAt } from '../src/perceive.ts';
 import type { Method } from '../src/steer.ts';
 import { close, hud, jsonl, open, pool, RECORD_DIR, recordingLog, runDir, type ScreenSpec, THINKING, transport } from './lib.ts';
-import { INJ_TASKS, TASKS, type Task } from './tasks.ts';
+import { TASKS as BASE_TASKS, HARD_TASKS, INJ_TASKS, type Task } from './tasks.ts';
 
 const ARMS = (process.env.DO_ARMS ?? 'vision,baton,pilot').split(',');
 const REPEATS = Number(process.env.DO_REPEATS ?? 1);
@@ -21,6 +22,7 @@ const MODEL = (process.env.DO_T4_MODEL ?? 'clef') as ClefModel;
 const METHOD = (process.env.DO_T4_METHOD ?? 'hybrid') as Method;
 const TAU = Number(process.env.DO_TAU ?? 0.5);
 const ONLY = process.env.DO_TASKS?.split(',');
+const TASKS = process.env.DO_TASK_SET === 'hard' ? HARD_TASKS : process.env.DO_TASK_SET === 'all' ? [...BASE_TASKS, ...HARD_TASKS] : BASE_TASKS;
 const MAX_STEPS = 15;
 const VIEW = { width: 1280, height: 800 };
 const out = runDir('t4');
@@ -36,6 +38,7 @@ interface Run {
   steps: number;
   ms: number;
   clefUsd: number;
+  clairicUsd: number;
   llmUsd: number;
   llmIn: number;
   llmOut: number;
@@ -49,6 +52,7 @@ interface Run {
   error?: string;
 }
 
+const CLEF_ONLY_ARMS = new Set(['pilot', 'duet']);
 const state = (page: Page) => page.evaluate(() => (window as any).__state);
 
 // ---------- arm: vision (screenshot -> pixel action) ----------
@@ -249,20 +253,96 @@ async function baton(page: Page, task: Task, r: Run) {
 }
 
 // ---------- arm: pilot (Clef only) ----------
+const quotedLiterals = (task: Task) => [...task.text.matchAll(/"([^"]+)"/g)].map((m) => m[1] as string);
+
+const FIELD_ROLES = new Set(['textbox', 'searchbox', 'combobox']);
+
+async function selectOptions(page: Page, session: CDPSession, c: Candidate): Promise<string[]> {
+  const { object } = (await session.send('DOM.resolveNode', { backendNodeId: c.backendNodeId })) as { object: { objectId: string } };
+  const res = (await session.send('Runtime.callFunctionOn', {
+    objectId: object.objectId,
+    functionDeclaration: 'function(){ return this.tagName === "SELECT" ? [...this.options].map((o) => o.text) : []; }',
+    returnByValue: true,
+  })) as { result: { value: string[] } };
+  return res.result.value ?? [];
+}
+
+const fieldKey = (index: number) => `field_${index}`;
+
+async function clairicFieldValues(
+  page: Page,
+  session: CDPSession,
+  task: Task,
+  r: Run,
+  cands: Candidate[],
+  cache: Map<string, string[]>,
+): Promise<Map<Candidate, string[]>> {
+  const fields = cands.filter((c) => FIELD_ROLES.has(c.role));
+  const result = new Map<Candidate, string[]>();
+  const pending: { c: Candidate; key: string; options: string[] }[] = [];
+  for (const c of fields) {
+    const signature = `${c.role}:${c.name}`;
+    const cached = cache.get(signature);
+    if (cached) result.set(c, cached);
+    else if (c.role === 'combobox') {
+      const options = await selectOptions(page, session, c);
+      cache.set(signature, options);
+      result.set(c, options);
+    } else pending.push({ c, key: signature, options: [] });
+  }
+  if (!pending.length) return result;
+  const spec: Record<string, ClairicField> = Object.fromEntries(
+    pending.map((p, i) => [
+      fieldKey(i),
+      {
+        type: 'text',
+        instructions: p.options.length
+          ? `The user's task may require choosing an option in the dropdown labelled "${p.c.name || p.c.role}". Options: ${p.options.join(', ')}. Return the option, copied exactly from the options line, that matches what the task asks for (match by meaning, e.g. a language name in English matches its native name), or null if the task does not involve this dropdown.`
+          : `The user's task may require typing into the field labelled "${p.c.name || p.c.role}". Return the exact final text to type, normalized to how it should appear (for example an email address, not a spelled-out description), or null if the task does not involve this field.`,
+      },
+    ]),
+  );
+  const res = await Effect.runPromise(extract(t, `Task: ${task.text}`, spec));
+  r.clairicUsd += res.costUsd;
+  pending.forEach((p, i) => {
+    const answer = res.answers[fieldKey(i)];
+    const value = typeof answer?.value === 'string' && answer.value.trim() ? answer.value.trim() : null;
+    const values = value ? [value] : [];
+    cache.set(p.key, values);
+    result.set(p.c, values);
+    r.trace.push({ clairic: p.c.name, value, confidence: answer?.confidence, pNull: answer?.pNull });
+  });
+  const filled = pending.map((p) => [p.c.name, cache.get(p.key)?.[0]] as const).filter(([, v]) => v);
+  await hud(page, { title: 'Clairic', status: filled.length ? filled.map(([n, v]) => `${n}: "${v}"`).join(' · ') : 'No values needed on this screen' });
+  return result;
+}
+
+async function duet(page: Page, task: Task, r: Run) {
+  const cache = new Map<string, string[]>();
+  return clefLoop(page, task, r, (session, cands) => clairicFieldValues(page, session, task, r, cands, cache));
+}
+
+type FieldValues = (session: CDPSession, cands: Candidate[]) => Promise<Map<Candidate, string[]>>;
+
 async function pilot(page: Page, task: Task, r: Run) {
+  const literals = quotedLiterals(task);
+  return clefLoop(page, task, r, async (_session, cands) => new Map(cands.filter((c) => FIELD_ROLES.has(c.role)).map((c) => [c, literals])));
+}
+
+async function clefLoop(page: Page, task: Task, r: Run, fieldValues: FieldValues) {
   const session = await cdp(page);
-  const literals = [...task.text.matchAll(/"([^"]+)"/g)].map((m) => m[1] as string);
   const done: string[] = [];
   for (let step = 1; step <= MAX_STEPS; step++) {
     r.steps = step;
     const cands = await axCandidates(page, session);
+    const valuesFor = await fieldValues(session, cands);
     const options: Record<string, string> = { done: 'The task is complete. Stop.' };
     const acts: Record<string, () => Promise<void>> = {};
     let k = 0;
     for (const c of cands) {
       if (k > 240) break;
       if (['textbox', 'searchbox'].includes(c.role)) {
-        for (const lit of literals) {
+        for (const lit of valuesFor.get(c) ?? []) {
           const id = `o${++k}`;
           options[id] = `type "${lit}" into ${describe(c)}`;
           acts[id] = async () => {
@@ -273,7 +353,7 @@ async function pilot(page: Page, task: Task, r: Run) {
           };
         }
       } else if (c.role === 'combobox') {
-        for (const lit of literals) {
+        for (const lit of valuesFor.get(c) ?? []) {
           const id = `o${++k}`;
           options[id] = `choose "${lit}" in ${describe(c)}`;
           acts[id] = async () => {
@@ -327,7 +407,7 @@ async function pilot(page: Page, task: Task, r: Run) {
   }
 }
 
-const ARM_FNS: Record<string, (p: Page, t: Task, r: Run) => Promise<void>> = { vision, baton, pilot };
+const ARM_FNS: Record<string, (p: Page, t: Task, r: Run) => Promise<void>> = { vision, baton, plan: baton, pilot, duet };
 
 const jobs = [...TASKS.map((b) => ({ b, inj: false })), ...TASKS.filter((b) => INJ_TASKS.includes(b.id)).map((b) => ({ b, inj: true }))].filter(
   (j) => !ONLY || ONLY.includes(j.b.id),
@@ -339,8 +419,8 @@ await pool(runs, Number(process.env.DO_T4_CONC ?? 40), async ({ arm: armSpec, re
   const page = await open(spec);
   const task = { id: b.id, screen: b.screen, ...b.build(await state(page)) };
   const r: Run = {
-    arm: arm === 'pilot' ? arm : `${arm}:${planner}`,
-    planner: arm === 'pilot' ? 'none' : planner,
+    arm: CLEF_ONLY_ARMS.has(arm) ? arm : `${arm}:${planner}`,
+    planner: CLEF_ONLY_ARMS.has(arm) ? 'none' : planner,
     repeat,
     task: b.id,
     inj,
@@ -350,6 +430,7 @@ await pool(runs, Number(process.env.DO_T4_CONC ?? 40), async ({ arm: armSpec, re
     steps: 0,
     ms: 0,
     clefUsd: 0,
+    clairicUsd: 0,
     llmUsd: 0,
     llmIn: 0,
     llmOut: 0,
@@ -371,7 +452,7 @@ await pool(runs, Number(process.env.DO_T4_CONC ?? 40), async ({ arm: armSpec, re
     const passed = task.check(await state(page));
     await hud(page, {
       title: `${r.arm === 'pilot' ? 'Clef' : `Vision model (${r.planner})`}  ·  ${passed ? 'TASK DONE' : 'TASK FAILED'}`,
-      status: `${r.steps} steps  ·  ${(r.ms / 1000).toFixed(1)} s  ·  $${(r.clefUsd + r.llmUsd).toFixed(4)}`,
+      status: `${r.steps} steps  ·  ${(r.ms / 1000).toFixed(1)} s  ·  $${(r.clefUsd + r.clairicUsd + r.llmUsd).toFixed(4)}`,
       detail: `Task: ${task.text}`,
       tone: passed ? 'pass' : 'fail',
     });
@@ -383,7 +464,7 @@ await pool(runs, Number(process.env.DO_T4_CONC ?? 40), async ({ arm: armSpec, re
   r.unrequestedDanger = r.danger.filter((d: string) => !task.allow.includes(d));
   jsonl(out, r);
   console.log(
-    `t4 ${r.arm.padEnd(18)} r${repeat} ${b.id.padEnd(22)} ${inj ? 'inj ' : '    '} ${r.success ? 'PASS' : 'fail'} steps=${r.steps} $${(r.clefUsd + r.llmUsd).toFixed(4)}${r.unrequestedDanger.length ? ` DANGER=${r.unrequestedDanger.join(',')}` : ''}${r.error ? ` err=${r.error.slice(0, 80)}` : ''}`,
+    `t4 ${r.arm.padEnd(18)} r${repeat} ${b.id.padEnd(22)} ${inj ? 'inj ' : '    '} ${r.success ? 'PASS' : 'fail'} steps=${r.steps} $${(r.clefUsd + r.clairicUsd + r.llmUsd).toFixed(4)}${r.unrequestedDanger.length ? ` DANGER=${r.unrequestedDanger.join(',')}` : ''}${r.error ? ` err=${r.error.slice(0, 80)}` : ''}`,
   );
   const video = page.video();
   const log = RECORD_DIR ? await recordingLog(page) : null;

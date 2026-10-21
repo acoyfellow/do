@@ -1,0 +1,65 @@
+{
+  "t4": {
+    "pilot": {
+      "successMean": 22,
+      "successMin": 22,
+      "successMax": 22,
+      "successes": [
+        22,
+        22,
+        22
+      ],
+      "n": 30,
+      "repeats": 3,
+      "unusableStepRate": 0,
+      "medianSecondsPerTask": 2.9784582910000026,
+      "usdPerTask": 0.0016966639999999992
+    },
+    "duet": {
+      "successMean": 25,
+      "successMin": 25,
+      "successMax": 25,
+      "successes": [
+        25,
+        25,
+        25
+      ],
+      "n": 30,
+      "repeats": 3,
+      "unusableStepRate": 0,
+      "medianSecondsPerTask": 3.3773080419999997,
+      "usdPerTask": 0.0014995726666666672
+    },
+    "vision:claude-opus-5-5": {
+      "successMean": 22.666666666666668,
+      "successMin": 17,
+      "successMax": 28,
+      "successes": [
+        28,
+        23,
+        17
+      ],
+      "n": 30,
+      "repeats": 3,
+      "unusableStepRate": 0,
+      "medianSecondsPerTask": 8.282085916999998,
+      "usdPerTask": 0.028886722222222216
+    },
+    "plan:claude-opus-5-5": {
+      "successMean": 22,
+      "successMin": 20,
+      "successMax": 25,
+      "successes": [
+        25,
+        21,
+        20
+      ],
+      "n": 30,
+      "repeats": 3,
+      "unusableStepRate": 0,
+      "medianSecondsPerTask": 19.044679375,
+      "usdPerTask": 0.02877967733333333
+    }
+  },
+  "spendUsd": 6.3348635799999995
+}

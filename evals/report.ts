@@ -171,7 +171,7 @@ if (t4.length) {
         rs.map((r) => r.ms),
         0.5,
       ) / 1000;
-    const usdPerTask = mean(rs.map((r) => r.clefUsd + r.llmUsd));
+    const usdPerTask = mean(rs.map((r) => r.clefUsd + (r.clairicUsd ?? 0) + r.llmUsd));
     t4s[arm] = {
       successMean: mean(successes),
       successMin: Math.min(...successes),
@@ -240,7 +240,7 @@ if (t5.length || inj4.length) {
   }
 }
 
-const spend = [...t1, ...t3, ...t5].reduce((a, r) => a + (r.costUsd ?? 0), 0) + t4.reduce((a, r) => a + r.clefUsd + r.llmUsd, 0);
+const spend = [...t1, ...t3, ...t5].reduce((a, r) => a + (r.costUsd ?? 0), 0) + t4.reduce((a, r) => a + r.clefUsd + (r.clairicUsd ?? 0) + r.llmUsd, 0);
 lines.push(`Total spend recorded in this run: ${usd(spend)}.`, '');
 writeFileSync(join(dir, 'REPORT.md'), lines.join('\n'));
 summary.spendUsd = spend;

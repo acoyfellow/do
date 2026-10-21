@@ -1,10 +1,12 @@
 // Baseline: a generative vision model reading screenshots and answering in JSON,
 // the way today's computer-use loops work. Same gateway, same token.
 import { Data, Effect, Schedule } from 'effect';
+import { anthropicMessages } from './anthropic.ts';
 import type { Transport } from './clef.ts';
 
 export const LLM_MODELS = {
   'kimi-k2.6': {
+    provider: 'workers-ai',
     workersAiId: '@cf/moonshotai/kimi-k2.6',
     usdIn: 0.95,
     usdOut: 4.0,
@@ -14,6 +16,7 @@ export const LLM_MODELS = {
     systemRole: true,
   },
   'qwen3.8-27b': {
+    provider: 'workers-ai',
     workersAiId: '@cf/qwen/qwen3.8-27b',
     usdIn: 0.45,
     usdOut: 3.2,
@@ -22,7 +25,18 @@ export const LLM_MODELS = {
     frame: { width: 1280, height: 800 },
     systemRole: false,
   },
+  'claude-opus-5-5': {
+    provider: 'anthropic',
+    workersAiId: 'claude-opus-5-5',
+    usdIn: 5,
+    usdOut: 25,
+    thinkingOff: {},
+    coordinates: 'pixels',
+    frame: { width: 1280, height: 800 },
+    systemRole: true,
+  },
 } as const;
+export const ANTHROPIC_EFFORT = (process.env.DO_EFFORT ?? 'low') as 'low' | 'medium' | 'high';
 export type LlmModel = keyof typeof LLM_MODELS;
 export type CoordinateSystem = 'pixels' | 'normalized1000';
 
@@ -120,6 +134,22 @@ export function chat(
   if (opts.json) body.response_format = { type: 'json_object' };
   const once = Effect.gen(function* () {
     const t0 = performance.now();
+    if (m.provider === 'anthropic') {
+      const reply = yield* Effect.tryPromise({
+        try: (signal) =>
+          anthropicMessages(m.workersAiId, messages, { tools: opts.tools, maxTokens: Math.max(opts.maxTokens ?? 800, 4000), effort: ANTHROPIC_EFFORT }, signal),
+        catch: (e) => new LlmError({ status: 0, reason: String(e).slice(0, 300) }),
+      });
+      if (reply.status !== 200) return yield* Effect.fail(new LlmError({ status: reply.status, reason: reply.raw.slice(0, 500) }));
+      return {
+        text: reply.text,
+        toolCalls: reply.toolCalls,
+        inputTokens: reply.inputTokens,
+        outputTokens: reply.outputTokens,
+        costUsd: (reply.inputTokens * m.usdIn + reply.outputTokens * m.usdOut) / 1e6,
+        ms: performance.now() - t0,
+      } satisfies LlmResult;
+    }
     const res = yield* Effect.tryPromise({
       try: (signal) => transport(m.workersAiId, body, signal),
       catch: (e) => new LlmError({ status: 0, reason: String(e).slice(0, 300) }),
@@ -138,7 +168,11 @@ export function chat(
   return once.pipe(
     Effect.timeout('120 seconds'),
     Effect.catchTag('TimeoutError', () => Effect.fail(new LlmError({ status: 0, reason: 'timeout' }))),
-    Effect.retry({ schedule: Schedule.exponential('1 second'), times: 3, while: (e) => e.status === 429 || e.status >= 500 || e.status === 0 }),
+    Effect.retry({
+      schedule: Schedule.exponential('1 second'),
+      times: 3,
+      while: (e) => e.status === 429 || e.status === 529 || e.status >= 500 || e.status === 0,
+    }),
   );
 }
 
