@@ -21,5 +21,7 @@
     "qwen3.8-27b": "@cf/qwen/qwen3.8-27b",
     "claude-opus-5-5": "claude-opus-5-5"
   },
-  "fixture": "evals/fixtures/app.html"
+  "fixture": "evals/fixtures/app.html",
+  "srcCommit": "00db67732a90f19bddc512d785bd7eb115442095",
+  "srcCommitNote": "stamped after the fold: src changes since the run commit only remove browser code, which moved to bench/browser.ts"
 }
