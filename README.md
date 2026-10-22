@@ -6,6 +6,12 @@
 
 **Idea:** the page already knows what can be clicked. do lists those controls in code, asks [Clef](https://developers.cloudflare.com/workers-ai/models/clef/) (Cloudflare's small decision model) to pick one with a probability, clicks it in code, and asks Clef to check the result. Clef never guesses coordinates. It chooses from a list.
 
+## Demo
+
+https://github.com/acoyfellow/do/raw/main/docs/demo-relay.mp4
+
+[`docs/demo-relay.mp4`](docs/demo-relay.mp4) (38 s) is a real recording with no staging. Clef + Clairic types "jordan at cloudflare dot com" as written and fails. The relay arm sees that the task needs new text, asks kimi-k2.6 once for the field values, and Clef still makes every click. On all 30 tasks, relay finished 30/30 at $0.0016 a task, against $0.029 for Opus ([harder tasks](#harder-tasks-paraphrased-values)). To rebuild it, record with `DO_RECORD=<dir>` and run `bun evals/demo-relay.ts <dir> docs/demo-relay.mp4`.
+
 ## Results
 
 20 tasks in a local test app (mail, settings, files, shop, dashboard, chat, people, editor), 3 repeats per arm. Success is read from the app's state, never from the agent's claim.

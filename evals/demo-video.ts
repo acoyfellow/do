@@ -32,15 +32,15 @@ const css = `
   tr.win td { color: #4ade80; font-weight: 700; }
 `;
 
-const escapeHtml = (text: string) => text.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch] ?? ch);
+export const escapeHtml = (text: string) => text.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch] ?? ch);
 const toneColor = (tone: Caption['tone'], accent: string) => (tone === 'pass' ? '#4ade80' : tone === 'fail' ? '#f87171' : accent);
 
-function run(cmd: string, args: string[]) {
+export function run(cmd: string, args: string[]) {
   const result = spawnSync(cmd, args, { stdio: ['ignore', 'inherit', 'inherit'] });
   if (result.status !== 0) throw new Error(`${cmd} failed`);
 }
 
-function durationSeconds(file: string): number {
+export function durationSeconds(file: string): number {
   const out = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file], { encoding: 'utf8' });
   return Number(out.stdout.trim());
 }
@@ -75,7 +75,7 @@ function visibleCaptions(log: Log): Caption[] {
     });
 }
 
-async function renderSegment(dir: string, name: string, segment: Segment): Promise<string> {
+export async function renderSegment(dir: string, name: string, segment: Segment): Promise<string> {
   const captions = visibleCaptions(segment.log);
   const length = durationSeconds(segment.video);
   await renderImages([
@@ -143,7 +143,7 @@ async function renderSegment(dir: string, name: string, segment: Segment): Promi
   return output;
 }
 
-async function renderCard(dir: string, name: string, seconds: number, html: string): Promise<string> {
+export async function renderCard(dir: string, name: string, seconds: number, html: string): Promise<string> {
   await renderImages([{ file: `${dir}/${name}.png`, ...CANVAS, html: `<div class="full center">${html}</div>` }]);
   const output = `${dir}/${name}.mp4`;
   run('ffmpeg', [
@@ -165,7 +165,7 @@ async function renderCard(dir: string, name: string, seconds: number, html: stri
   return output;
 }
 
-const readLog = (file: string): Log => JSON.parse(readFileSync(file, 'utf8'));
+export const readLog = (file: string): Log => JSON.parse(readFileSync(file, 'utf8'));
 
 if (import.meta.main) {
   const [source, task, visionArm, out] = process.argv.slice(2);

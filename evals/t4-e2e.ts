@@ -479,6 +479,16 @@ async function clefLoop(page: Page, task: Task, r: Run, fieldValues: FieldValues
   }
 }
 
+const ARM_TITLES: Record<string, (planner: string) => string> = {
+  pilot: () => 'Clef',
+  duet: () => 'Clef + Clairic',
+  relay: (planner) => `Clef + Clairic + writer (${planner})`,
+  baton: (planner) => `Planner (${planner}) + Clef`,
+  plan: (planner) => `Planner (${planner}) + Clef`,
+  vision: (planner) => `Vision model (${planner})`,
+};
+const armTitle = (arm: string, planner: string) => (ARM_TITLES[arm] ?? ARM_TITLES.vision!)(planner);
+
 const ARM_FNS: Record<string, (p: Page, t: Task, r: Run) => Promise<void>> = { vision, baton, plan: baton, pilot, duet, relay };
 
 const jobs = [...TASKS.map((b) => ({ b, inj: false })), ...TASKS.filter((b) => INJ_TASKS.includes(b.id)).map((b) => ({ b, inj: true }))].filter(
@@ -512,7 +522,7 @@ await pool(runs, Number(process.env.DO_T4_CONC ?? 40), async ({ arm: armSpec, re
     unusableSteps: 0,
     trace: [],
   };
-  await hud(page, { title: r.arm === 'pilot' ? 'Clef' : `Vision model (${r.planner})`, status: `Task: ${task.text}`, detail: 'starting' });
+  await hud(page, { title: armTitle(arm, r.planner), status: `Task: ${task.text}`, detail: 'starting' });
   const t0 = performance.now();
   try {
     await (ARM_FNS[arm] as (p: Page, t: Task, r: Run) => Promise<void>)(page, task, r);
@@ -523,7 +533,7 @@ await pool(runs, Number(process.env.DO_T4_CONC ?? 40), async ({ arm: armSpec, re
   if (RECORD_DIR) {
     const passed = task.check(await state(page));
     await hud(page, {
-      title: `${r.arm === 'pilot' ? 'Clef' : `Vision model (${r.planner})`}  ·  ${passed ? 'TASK DONE' : 'TASK FAILED'}`,
+      title: `${armTitle(arm, r.planner)}  ·  ${passed ? 'TASK DONE' : 'TASK FAILED'}`,
       status: `${r.steps} steps  ·  ${(r.ms / 1000).toFixed(1)} s  ·  $${(r.clefUsd + r.clairicUsd + r.llmUsd).toFixed(4)}`,
       detail: `Task: ${task.text}`,
       tone: passed ? 'pass' : 'fail',
