@@ -1,0 +1,23 @@
+evals/demo-relay.ts
+  s_a90e6f4617f964::t_1944a8ce8c22d8 1-57
+evals/demo-video.ts
+  s_a90e6f4617f964::t_ec9aa5445ec2c4 35,38,43,78,146,168
+evals/t4-e2e.ts
+  s_a90e6f4617f964::t_07d0bc4c83e10f 482-491,525,536
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c1cae10e28c0a84f40378a59ca0d4dc53d3d2cf9",
+  "prompts": {},
+  "sessions": {
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
