@@ -1,0 +1,83 @@
+.gitignore
+  s_a90e6f4617f964::t_373c05329a7ca2 4-5,7-8
+README.md
+  s_a90e6f4617f964::t_dd4e4d1bd40692 5,7-72,76,78,98,100,102-105,107,109-112,114,125-126,131,144-148
+bench/baseline.json
+  s_a90e6f4617f964::t_891ccaae0f31a5 1-13
+bench/browser.ts
+  s_a90e6f4617f964::t_a2562cdbca835c 2-178
+bench/compare-runs.py
+  s_a90e6f4617f964::t_5232b19c7b80bc 10
+bench/demo-relay.ts
+  s_a90e6f4617f964::t_27ea7a7f64a845 51
+bench/dump.ts
+  s_a90e6f4617f964::t_6f1f57a80c85ef 4
+bench/gate.test.ts
+  s_a90e6f4617f964::t_f795dcaa9ba032 1-13
+bench/gate.ts
+  s_a90e6f4617f964::t_9905d83c70faaf 1-43
+bench/lib.ts
+  s_a90e6f4617f964::t_7a2df64d313c97 10,124
+bench/probe.ts
+  s_a90e6f4617f964::t_3b093ec094f4ac 6
+bench/report.ts
+  s_a90e6f4617f964::t_16323d8abe629e 6
+bench/run-all.ts
+  s_a90e6f4617f964::t_445dab2cba5031 26,41-42,49-50,60-61,66
+bench/runs/reference-mock/REPORT.md
+  s_a90e6f4617f964::t_d559f1268769ec 9-26,47,78,80,82
+bench/runs/reference-mock/manifest.json
+  s_a90e6f4617f964::t_93a81a4d96b720 3,5
+bench/runs/reference-mock/summary.json
+  s_a90e6f4617f964::t_3ae942f3daf87a 19,95,101,176,179,190-191,193,204-205,218
+bench/runs/reference-mock/t1.jsonl
+  s_a90e6f4617f964::t_57fbc44709b7ee 1-72
+bench/runs/reference-mock/t3.jsonl
+  s_a90e6f4617f964::t_55195f5da8d723 1-72
+bench/runs/reference-mock/t4.jsonl
+  s_a90e6f4617f964::t_8fcbb32d96a0ca 1-16
+bench/runs/reference-mock/t5.jsonl
+  s_a90e6f4617f964::t_12b94057b53ade 1-114
+bench/runs/reference-mock/timing.json
+  s_a90e6f4617f964::t_4f6ae18c4f93b3 3,5-9
+bench/smoke.ts
+  s_a90e6f4617f964::t_7c99627d4a3f70 2
+bench/t1-grounding.ts
+  s_a90e6f4617f964::t_994a743b860862 7-8
+bench/t3-verify.ts
+  s_a90e6f4617f964::t_a17efdfed47593 5
+bench/t4-e2e.ts
+  s_a90e6f4617f964::t_a7e4a8b644c904 10,13-14
+bench/t5-safety.ts
+  s_a90e6f4617f964::t_66c9d8b25ad1f5 4-5
+bench/verify.ts
+  s_a90e6f4617f964::t_b0da5269788bab 51,59
+biome.json
+  s_a90e6f4617f964::t_00599b13842955 4
+bun.lock
+  s_a90e6f4617f964::t_e8c41f3f4f6bfc 17
+docs/share-draft.md
+  s_a90e6f4617f964::t_58a2429059a79a 15
+llms.txt
+  s_a90e6f4617f964::t_659ce2b9ef3888 1-33
+package.json
+  s_a90e6f4617f964::t_c4e57e55936291 11,13-27,30,41-59
+tsconfig.json
+  s_a90e6f4617f964::t_d8da9f409573f7 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "00db67732a90f19bddc512d785bd7eb115442095",
+  "prompts": {},
+  "sessions": {
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
