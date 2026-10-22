@@ -1,7 +1,8 @@
 node_modules
 .DS_Store
 proof-runs
-evals/runs/*-mock
-!evals/runs/reference-mock
+bench/runs/*-mock
+!bench/runs/reference-mock
 .repro
-evals/runs/video-*
+bench/runs/video-*
+bench/runs/smoke-*

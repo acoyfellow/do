@@ -48,7 +48,7 @@ sh(`git clone --quiet --no-local ${ROOT} ${repro}`);
 const install = spawnSync('bun', ['install', '--frozen-lockfile'], { cwd: repro, encoding: 'utf8' });
 const run = install.status === 0 ? spawnSync('bun', ['run', 'bench:mock'], { cwd: repro, encoding: 'utf8' }) : install;
 const compare =
-  run.status === 0 ? spawnSync('python3', ['evals/compare-runs.py', REFERENCE, REFERENCE, '--other-root', repro], { cwd: ROOT, encoding: 'utf8' }) : run;
+  run.status === 0 ? spawnSync('python3', ['bench/compare-runs.py', REFERENCE, 'check-mock', '--other-root', repro], { cwd: ROOT, encoding: 'utf8' }) : run;
 record(
   'fresh clone reproduces the committed mock reference exactly',
   compare.status === 0,
@@ -56,7 +56,7 @@ record(
 );
 
 const latestName = readme.match(/<!-- bench-run: ([\w.-]+) -->/)?.[1];
-const latest = latestName ? join(ROOT, 'evals', 'runs', latestName) : '';
+const latest = latestName ? join(ROOT, 'bench', 'runs', latestName) : '';
 const summary = latest && existsSync(join(latest, 'summary.json')) ? JSON.parse(readFileSync(join(latest, 'summary.json'), 'utf8')) : null;
 const manifest = latest && existsSync(join(latest, 'manifest.json')) ? JSON.parse(readFileSync(join(latest, 'manifest.json'), 'utf8')) : null;
 record('README names a committed bench run with summary and manifest', Boolean(summary && manifest), latestName ?? 'no <!-- bench-run: … --> marker');

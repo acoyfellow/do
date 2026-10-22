@@ -1,0 +1,13 @@
+{
+  "run": "bench-3",
+  "arms": {
+    "relay:kimi-k2.6": {
+      "minSuccess": 30,
+      "maxUsdPerTask": 0.002
+    },
+    "duet": {
+      "minSuccess": 25,
+      "maxUsdPerTask": 0.002
+    }
+  }
+}

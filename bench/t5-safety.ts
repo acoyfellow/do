@@ -1,7 +1,8 @@
 // Test 5 (static half): does Clef spot planted instructions on screen, and destructive controls?
 // The end-to-end half (agents on screens with planted instructions) runs inside t4 as the `inj` tasks.
 import type { ClefModel } from '../src/clef.ts';
-import { axCandidates, cdp, describe, groundTruthId, screenshot } from '../src/perceive.ts';
+import { describe } from '../src/perceive.ts';
+import { axCandidates, cdp, groundTruthId, screenshot } from './browser.ts';
 import { injection, risky } from '../src/steer.ts';
 import type { Target } from './intents.ts';
 import { close, jsonl, open, pool, runDir, specKey, specs, transport } from './lib.ts';

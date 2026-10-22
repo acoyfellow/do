@@ -23,7 +23,7 @@ const runSync = (file: string) => {
 
 const runPrefixed = (file: string) =>
   new Promise<number>((done) => {
-    const label = file.replace(/^evals\/|\.ts$/g, '');
+    const label = file.replace(/^bench\/|\.ts$/g, '');
     const t0 = performance.now();
     const child = spawn('bun', [file], { env, stdio: ['ignore', 'pipe', 'pipe'] });
     const relay = (chunk: Buffer) => {
@@ -38,16 +38,16 @@ const runPrefixed = (file: string) =>
     });
   });
 
-if (!mock) runSync('evals/probe.ts');
-const tests = (process.env.DO_ONLY_TESTS ?? 't1-grounding,t3-verify,t5-safety,t4-e2e').split(',').map((t) => `evals/${t}.ts`);
+if (!mock) runSync('bench/probe.ts');
+const tests = (process.env.DO_ONLY_TESTS ?? 't1-grounding,t3-verify,t5-safety,t4-e2e').split(',').map((t) => `bench/${t}.ts`);
 env.DO_CONCURRENCY = String(Math.max(1, Math.floor(totalInFlight / tests.length)));
 const codes = await Promise.all(tests.map(runPrefixed));
 if (codes.some((code) => code !== 0)) {
   console.log(`tests failed: ${tests.filter((_, i) => codes[i] !== 0).join(', ')}`);
   process.exit(1);
 }
-runSync('evals/report.ts');
-const dir = `evals/runs/${id}${mock ? '-mock' : ''}`;
+runSync('bench/report.ts');
+const dir = `bench/runs/${id}${mock ? '-mock' : ''}`;
 const git = (args: string) => execSync(`git ${args}`, { encoding: 'utf8' }).trim();
 const settings = Object.fromEntries(
   Object.entries(env)
@@ -57,12 +57,13 @@ const settings = Object.fromEntries(
 const manifest = {
   run: id,
   commit: git('rev-parse HEAD'),
-  dirty: git('status --porcelain -- src evals/*.ts evals/fixtures package.json bun.lock') !== '',
+  dirty: git('status --porcelain -- src bench/*.ts bench/fixtures package.json bun.lock') !== '',
+  srcCommit: git('log -1 --format=%H -- src'),
   mock,
   settings,
   clefModels: Object.fromEntries(Object.entries(CLEF_MODELS).map(([name, model]) => [name, model.workersAiId])),
   llmModels: Object.fromEntries(Object.entries(LLM_MODELS).map(([name, model]) => [name, model.workersAiId])),
-  fixture: 'evals/fixtures/app.html',
+  fixture: 'bench/fixtures/app.html',
 };
 writeFileSync(`${dir}/manifest.json`, `${JSON.stringify(manifest, null, 2)}\n`);
 writeFileSync(

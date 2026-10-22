@@ -7,7 +7,7 @@ VOLATILE = {"ms", "trace"}
 
 
 def rows(root, run, test):
-    path = os.path.join(root, "evals", "runs", run, f"{test}.jsonl")
+    path = os.path.join(root, "bench", "runs", run, f"{test}.jsonl")
     with open(path) as handle:
         records = [json.loads(line) for line in handle if line.strip()]
     return sorted(json.dumps({k: v for k, v in r.items() if k not in VOLATILE}, sort_keys=True) for r in records)

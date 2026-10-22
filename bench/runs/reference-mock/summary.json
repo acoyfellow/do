@@ -15,8 +15,8 @@
     "kimi-k2.6/marks": 0,
     "kimi-k2.6/xy": 0,
     "qwen3.8-27b/xy": 0,
-    "clef/grid": 0,
     "clef-flash/grid": 0,
+    "clef/grid": 0,
     "clef-omni/grid": 0
   },
   "t2": {
@@ -92,13 +92,13 @@
       "tau98": null,
       "cover98": 0
     },
-    "clef/grid": {
+    "clef-flash/grid": {
       "ece": 0.00024414062500000016,
       "auc": null,
       "tau98": null,
       "cover98": 0
     },
-    "clef-flash/grid": {
+    "clef/grid": {
       "ece": 0.00024414062500000016,
       "auc": null,
       "tau98": null,
@@ -173,22 +173,8 @@
       "n": 1,
       "repeats": 2,
       "unusableStepRate": 0,
-      "medianSecondsPerTask": 0.17694454199999995,
+      "medianSecondsPerTask": 0.185971583,
       "usdPerTask": 0.00046175999999999997
-    },
-    "vision:qwen3.8-27b": {
-      "successMean": 0,
-      "successMin": 0,
-      "successMax": 0,
-      "successes": [
-        0,
-        0
-      ],
-      "n": 1,
-      "repeats": 2,
-      "unusableStepRate": 0,
-      "medianSecondsPerTask": 0.5173766250000001,
-      "usdPerTask": 0.002313
     },
     "vision:kimi-k2.6": {
       "successMean": 0,
@@ -201,8 +187,22 @@
       "n": 1,
       "repeats": 2,
       "unusableStepRate": 0,
-      "medianSecondsPerTask": 0.6537985829999999,
+      "medianSecondsPerTask": 0.504745125,
       "usdPerTask": 0.004635
+    },
+    "vision:qwen3.8-27b": {
+      "successMean": 0,
+      "successMin": 0,
+      "successMax": 0,
+      "successes": [
+        0,
+        0
+      ],
+      "n": 1,
+      "repeats": 2,
+      "unusableStepRate": 0,
+      "medianSecondsPerTask": 0.49539637500000006,
+      "usdPerTask": 0.002313
     },
     "baton:kimi-k2.6": {
       "successMean": 0,
@@ -215,7 +215,7 @@
       "n": 1,
       "repeats": 2,
       "unusableStepRate": 0,
-      "medianSecondsPerTask": 1.03834175,
+      "medianSecondsPerTask": 0.77411175,
       "usdPerTask": 0.00552704
     }
   },

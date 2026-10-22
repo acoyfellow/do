@@ -2,7 +2,7 @@
 // For each intent: correct click (label 1), click on empty space (0), click on a different control (0).
 // Arms: model x {before+after, after only} x {toast visible, toast hidden}.
 import type { ClefModel } from '../src/clef.ts';
-import { screenshot } from '../src/perceive.ts';
+import { screenshot } from './browser.ts';
 import { verify } from '../src/steer.ts';
 import { intentsFor, type Target } from './intents.ts';
 import { close, jsonl, open, pool, runDir, type ScreenSpec, specKey, specs, transport } from './lib.ts';

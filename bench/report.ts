@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { auc, mean, pct, quantile, ROOT } from './lib.ts';
 
-const runs = join(ROOT, 'evals', 'runs');
+const runs = join(ROOT, 'bench', 'runs');
 const dir = process.argv[2]
   ? join(runs, process.argv[2])
   : process.env.DO_RUN

@@ -1,7 +1,7 @@
 // Write example images for eyeballing: plain, marked, grid hop 1 for a few screens.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { axCandidates, cdp, gridShot, marked, screenshot } from '../src/perceive.ts';
+import { axCandidates, cdp, gridShot, marked, screenshot } from './browser.ts';
 import { close, open, ROOT, specKey, specs } from './lib.ts';
 
 const dir = join(ROOT, 'docs', 'examples');

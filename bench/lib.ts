@@ -7,7 +7,7 @@ import { readConfig, readToken } from '../src/credentials.ts';
 import { mockTransport } from './mock.ts';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-export const APP = `file://${join(ROOT, 'evals', 'fixtures', 'app.html')}`;
+export const APP = `file://${join(ROOT, 'bench', 'fixtures', 'app.html')}`;
 export const VIEWPORT = { width: 1280, height: 800 };
 
 export interface ScreenSpec {
@@ -121,7 +121,7 @@ export function transport(): Transport {
 export function runDir(test: string): string {
   const id = process.env.DO_RUN ?? new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   process.env.DO_RUN = id;
-  const dir = join(ROOT, 'evals', 'runs', `${id}${MOCK ? '-mock' : ''}`);
+  const dir = join(ROOT, 'bench', 'runs', `${id}${MOCK ? '-mock' : ''}`);
   mkdirSync(dir, { recursive: true });
   rmSync(join(dir, `${test}.jsonl`), { force: true });
   return join(dir, test);

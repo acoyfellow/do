@@ -3,7 +3,7 @@
 import { Effect } from 'effect';
 import { ask, CLEF_MODELS, type ClefModel } from '../src/clef.ts';
 import { chat, type LlmModel } from '../src/llm.ts';
-import { screenshot } from '../src/perceive.ts';
+import { screenshot } from './browser.ts';
 import { close, open, THINKING, transport } from './lib.ts';
 
 const t = transport();

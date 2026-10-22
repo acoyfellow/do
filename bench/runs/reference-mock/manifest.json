@@ -1,7 +1,8 @@
 {
   "run": "reference",
-  "commit": "cf54d5346c92edeb95e810fb6a9d0de3d5d68fc5",
+  "commit": "384b0e57123e644c5522384f512027309e5f56c8",
   "dirty": false,
+  "doVersion": "0.0.1",
   "mock": true,
   "settings": {
     "DO_ARMS": "vision:kimi-k2.6,vision:qwen3.8-27b,baton:kimi-k2.6,pilot",

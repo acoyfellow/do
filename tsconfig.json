@@ -11,5 +11,5 @@
     "types": ["bun", "node"],
     "exactOptionalPropertyTypes": false
   },
-  "include": ["src", "evals", "test", "pi"]
+  "include": ["src", "test", "bench"]
 }

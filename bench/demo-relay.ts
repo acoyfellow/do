@@ -48,7 +48,7 @@ const parts = [
       <tr><td>Clef + Clairic</td><td>25 / 30</td><td>12</td><td>$0.0015</td></tr>
       <tr><td>vision · claude-opus-5-5</td><td>22.7 / 30</td><td>4</td><td>$0.029</td></tr>
       <tr><td>Opus plans + Clef clicks</td><td>22.0 / 30</td><td>0</td><td>$0.029</td></tr>
-    </table><p class="muted" style="margin-top:36px">github.com/acoyfellow/do · bench-2 and bench-3 in evals/runs</p>`,
+    </table><p class="muted" style="margin-top:36px">github.com/acoyfellow/do · bench-2 and bench-3 in bench/runs</p>`,
   ),
 ];
 const list = `${dir}/list.txt`;

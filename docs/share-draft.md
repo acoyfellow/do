@@ -12,4 +12,4 @@ New since the first write-up:
 - **Honest limit:** the relay gate scores two of the generation tasks only just above its 0.5 threshold, so it is the weakest part. The test app is also easy for code to read.
 
 Video (38 s, real recording): docs/demo-relay.mp4
-Repo: github.com/acoyfellow/do. Every run record, its settings and the exact commit are in evals/runs/bench-3.
+Library: do. Benchmark: do-lab. Every run record, its settings and the exact commit are in evals/runs/bench-3.

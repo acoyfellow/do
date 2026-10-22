@@ -8,25 +8,26 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
-    "test": "bun test test/",
+    "test": "bun test test/ bench/",
     "check": "bun run typecheck && bun run lint && bun run test",
-    "screens": "bun evals/screens.ts",
-    "probe": "bun evals/probe.ts",
-    "t1": "bun evals/t1-grounding.ts",
-    "t2": "bun evals/report.ts",
-    "t3": "bun evals/t3-verify.ts",
-    "t4": "bun evals/t4-e2e.ts",
-    "t5": "bun evals/t5-safety.ts",
-    "evals": "bun evals/run-all.ts",
-    "report": "bun evals/report.ts",
-    "smoke": "bun evals/smoke.ts",
-    "bench": "DO_REPEATS=${DO_REPEATS:-3} DO_ARMS=${DO_ARMS:-vision:kimi-k2.6,vision:qwen3.8-27b,baton:kimi-k2.6,pilot} DO_SKIP_CACHE=${DO_SKIP_CACHE:-1} bun evals/run-all.ts",
-    "bench:mock": "DO_MOCK=1 DO_RUN=reference DO_SCREENS=2 DO_PER_SCREEN=2 DO_T3_PER_SCREEN=1 DO_TASKS=mail-archive DO_REPEATS=2 DO_ARMS=vision:kimi-k2.6,vision:qwen3.8-27b,baton:kimi-k2.6,pilot bun evals/run-all.ts",
-    "bench:verify": "bun evals/verify.ts"
+    "screens": "bun bench/screens.ts",
+    "probe": "bun bench/probe.ts",
+    "t1": "bun bench/t1-grounding.ts",
+    "t2": "bun bench/report.ts",
+    "t3": "bun bench/t3-verify.ts",
+    "t4": "bun bench/t4-e2e.ts",
+    "t5": "bun bench/t5-safety.ts",
+    "evals": "bun bench/run-all.ts",
+    "report": "bun bench/report.ts",
+    "smoke": "bun bench/smoke.ts",
+    "bench": "DO_REPEATS=${DO_REPEATS:-3} DO_ARMS=${DO_ARMS:-vision:kimi-k2.6,vision:qwen3.8-27b,baton:kimi-k2.6,pilot} DO_SKIP_CACHE=${DO_SKIP_CACHE:-1} bun bench/run-all.ts",
+    "bench:mock": "DO_MOCK=1 DO_RUN=${DO_RUN:-check} DO_SCREENS=2 DO_PER_SCREEN=2 DO_T3_PER_SCREEN=1 DO_TASKS=mail-archive DO_REPEATS=2 DO_ARMS=vision:kimi-k2.6,vision:qwen3.8-27b,baton:kimi-k2.6,pilot bun bench/run-all.ts && python3 bench/compare-runs.py reference-mock check-mock",
+    "bench:verify": "bun bench/verify.ts",
+    "gate": "bun bench/gate.ts",
+    "bench:mock:reference": "DO_MOCK=1 DO_RUN=reference DO_SCREENS=2 DO_PER_SCREEN=2 DO_T3_PER_SCREEN=1 DO_TASKS=mail-archive DO_REPEATS=2 DO_ARMS=vision:kimi-k2.6,vision:qwen3.8-27b,baton:kimi-k2.6,pilot bun bench/run-all.ts"
   },
   "dependencies": {
-    "effect": "4.0.0",
-    "playwright": "^1.56.0"
+    "effect": "4.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
@@ -37,6 +38,23 @@
     "tailwindcss": "^4",
     "@tailwindcss/vite": "^4",
     "typescript": "^5.9.3",
-    "vite": "8.3.3"
-  }
+    "vite": "8.3.3",
+    "playwright": "^1.56.0"
+  },
+  "exports": {
+    "./clef": "./src/clef.ts",
+    "./clairic": "./src/clairic.ts",
+    "./hand": "./src/hand.ts",
+    "./steer": "./src/steer.ts",
+    "./perceive": "./src/perceive.ts",
+    "./llm": "./src/llm.ts",
+    "./anthropic": "./src/anthropic.ts",
+    "./credentials": "./src/credentials.ts"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "llms.txt"
+  ]
 }

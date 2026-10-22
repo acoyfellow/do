@@ -1,5 +1,5 @@
 // Sanity: every screen renders, AX candidates map 1:1 onto ground-truth targets.
-import { axCandidates, cdp, groundTruthId } from '../src/perceive.ts';
+import { axCandidates, cdp, groundTruthId } from './browser.ts';
 import { close, open, specKey, specs } from './lib.ts';
 
 let bad = 0;

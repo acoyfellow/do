@@ -1,0 +1,33 @@
+# do
+
+Computer-use library. A device lists the controls on screen, Clef (a small Cloudflare model) picks one with a probability, the device acts, and Clef checks the result. Clef and Clairic never write text. A large model writes field values only when the task needs new text.
+
+Import paths: do/hand, do/clef, do/clairic, do/steer, do/llm, do/perceive.
+
+Use:
+```ts
+import { Hand, type Device } from 'do/hand';
+const hand = new Hand(transport, device, { model: 'clef', method: 'hybrid', tau: 0.5, riskTau: 0.5, injectionTau: 0.5, verify: true });
+await hand.outline();                         // short text list of controls
+await hand.act('archive the email from Dana');  // Clef picks, device clicks, Clef verifies; returns a receipt
+await hand.type('SAVE10', 'coupon code');
+await hand.select('Japanese', 'language');
+await hand.look('is the cart empty?');
+```
+
+Device contract (implement this to support a new screen):
+```ts
+interface Device {
+  viewport(): { width: number; height: number };
+  screenshot(clip?: Box): Promise<string>;           // data URL
+  marked(cands: Candidate[]): Promise<string>;       // screenshot with numbered boxes
+  gridShot(region: Box, n?: number): Promise<{ img: string; cells: Record<string, Box> }>;
+  candidates(): Promise<Candidate[]>;                // { id, role, name, x, y, w, h, backendNodeId }
+  click(p: { x: number; y: number }): Promise<void>;
+  typeInto(c: Candidate, text: string): Promise<void>;
+  setValue(c: Candidate, value: string): Promise<boolean>;
+  settle(): Promise<void>;
+}
+```
+
+Not included: no built-in device yet (the benchmark browser device is bench/browser.ts; native macOS is next), no MCP server. Benchmark and gate: bench/, bun run gate.

@@ -6,24 +6,24 @@ Run: `reference-mock`
 
 | arm | n | all | icon-only | repeated label | small | field | $/pick | median ms | errors |
 |---|---|---|---|---|---|---|---|---|---|
-| clef/ax_text | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00022 | 22 | 0 |
-| clef/ax_image | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00046 | 22 | 0 |
-| clef/hybrid | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00046 | 24 | 0 |
-| clef-flash/ax_text | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00003 | 24 | 0 |
-| clef-flash/ax_image | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00007 | 25 | 0 |
-| clef-flash/hybrid | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00007 | 25 | 0 |
-| clef-omni/ax_text | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00014 | 26 | 0 |
-| clef-omni/ax_image | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00029 | 26 | 0 |
-| clef-omni/hybrid | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00029 | 26 | 0 |
-| clef/marks | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00046 | 24 | 0 |
-| clef-flash/marks | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00007 | 25 | 0 |
-| clef-omni/marks | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00029 | 26 | 0 |
-| kimi-k2.6/marks | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00154 | 27 | 0 |
-| kimi-k2.6/xy | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00154 | 7 | 0 |
-| qwen3.8-27b/xy | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00077 | 12 | 0 |
-| clef/grid | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00139 | 38 | 0 |
-| clef-flash/grid | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00022 | 40 | 0 |
-| clef-omni/grid | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00087 | 27 | 0 |
+| clef/ax_text | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00022 | 19 | 0 |
+| clef/ax_image | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00046 | 20 | 0 |
+| clef/hybrid | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00046 | 20 | 0 |
+| clef-flash/ax_text | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00003 | 20 | 0 |
+| clef-flash/ax_image | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00007 | 21 | 0 |
+| clef-flash/hybrid | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00007 | 22 | 0 |
+| clef-omni/ax_text | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00014 | 22 | 0 |
+| clef-omni/ax_image | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00029 | 22 | 0 |
+| clef-omni/hybrid | 4 | **50.0%** | 50.0% (4) | 50.0% (4) | 50.0% (4) | - | $0.00029 | 24 | 0 |
+| clef/marks | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00046 | 20 | 0 |
+| clef-flash/marks | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00007 | 21 | 0 |
+| clef-omni/marks | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00029 | 22 | 0 |
+| kimi-k2.6/marks | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00154 | 23 | 0 |
+| kimi-k2.6/xy | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00154 | 14 | 0 |
+| qwen3.8-27b/xy | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00077 | 6 | 0 |
+| clef-flash/grid | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00022 | 24 | 0 |
+| clef/grid | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00139 | 57 | 0 |
+| clef-omni/grid | 4 | **0.0%** | 0.0% (4) | 0.0% (4) | 0.0% (4) | - | $0.00087 | 28 | 0 |
 
 Arms are `model/method`. Clef methods: `ax_text` (accessibility list only), `ax_image` (list + screenshot), `marks` (numbered boxes, no labels), `hybrid` (numbered boxes + labels), `grid` (3 hops of a 4x4 grid, no structure). Baselines: `kimi-k2.6/xy` and `qwen3.8-27b/xy` answer pixel coordinates; `kimi-k2.6/marks` picks a numbered box.
 
@@ -43,8 +43,8 @@ Arms are `model/method`. Clef methods: `ax_text` (accessibility list only), `ax_
 | clef-omni/ax_image | 4 | 0.519 | 0.000 | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | none |
 | clef-omni/marks | 4 | 0.019 | NaN | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | none |
 | clef-omni/hybrid | 4 | 0.519 | 0.000 | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | none |
-| clef/grid | 4 | 0.000 | NaN | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | none |
 | clef-flash/grid | 4 | 0.000 | NaN | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | none |
+| clef/grid | 4 | 0.000 | NaN | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | none |
 | clef-omni/grid | 4 | 0.000 | NaN | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | 0.0% / n/a | none |
 
 ECE: expected calibration error over 10 bins (0 is perfect). Cover: share of picks at or above the threshold; acc: accuracy of those picks. For grid, p is the product over hops.
@@ -75,11 +75,11 @@ Errors: 0. "toast hidden" removes the confirmation message, so only the change i
 | arm | success (mean, min-max) | claimed done but failed | mean steps | unusable steps | median s/task | $/task (Clef + LLM) | LLM tokens in/out per task | screenshots sent to LLM | errors |
 |---|---|---|---|---|---|---|---|---|---|
 | pilot | **0.0/1** (0-0) | 2 | 1.0 | 0.0% | 0.2 | $0.00046 ($0.00046 + $0.00000) | 0 / 0 | 0.0 | 0 |
+| vision:kimi-k2.6 | **0.0/1** (0-0) | 2 | 3.0 | 0.0% | 0.5 | $0.00464 ($0.00000 + $0.00464) | 4500 / 90 | 3.0 | 0 |
 | vision:qwen3.8-27b | **0.0/1** (0-0) | 2 | 3.0 | 0.0% | 0.5 | $0.00231 ($0.00000 + $0.00231) | 4500 / 90 | 3.0 | 0 |
-| vision:kimi-k2.6 | **0.0/1** (0-0) | 2 | 3.0 | 0.0% | 0.7 | $0.00464 ($0.00000 + $0.00464) | 4500 / 90 | 3.0 | 0 |
-| baton:kimi-k2.6 | **0.0/1** (0-0) | 2 | 4.0 | 0.0% | 1.0 | $0.00553 ($0.00185 + $0.00368) | 3200 / 160 | 0.0 | 0 |
+| baton:kimi-k2.6 | **0.0/1** (0-0) | 2 | 4.0 | 0.0% | 0.8 | $0.00553 ($0.00185 + $0.00368) | 3200 / 160 | 0.0 | 0 |
 
-| task | pilot | vision:qwen3.8-27b | vision:kimi-k2.6 | baton:kimi-k2.6 |
+| task | pilot | vision:kimi-k2.6 | vision:qwen3.8-27b | baton:kimi-k2.6 |
 |---|---|---|---|---|
 | mail-archive | 0/2 | 0/2 | 0/2 | 0/2 |
 
