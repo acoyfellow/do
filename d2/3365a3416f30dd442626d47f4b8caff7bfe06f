@@ -1,0 +1,19 @@
+bench/runs/bench-3/manifest.json
+  s_a90e6f4617f964::t_a3848339a80fa2 24-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d23365a3416f30dd442626d47f4b8caff7bfe06f",
+  "prompts": {},
+  "sessions": {
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
