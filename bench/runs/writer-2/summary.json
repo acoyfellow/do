@@ -1,0 +1,95 @@
+{
+  "writers": {
+    "glm-5.3-flash": {
+      "n": 44,
+      "passed": 40,
+      "accuracy": 0.9090909090909091,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 5
+        },
+        "combine": {
+          "n": 8,
+          "passed": 7
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 14
+        },
+        "compose": {
+          "n": 11,
+          "passed": 10
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.00007012386363636364,
+      "medianMs": 3339.9837920000064,
+      "errors": 0
+    },
+    "glm-5.3-flash>kimi-k2.6": {
+      "n": 44,
+      "passed": 41,
+      "accuracy": 0.9318181818181818,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 4
+        },
+        "combine": {
+          "n": 8,
+          "passed": 7
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 16
+        },
+        "compose": {
+          "n": 11,
+          "passed": 10
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.00007800795454545452,
+      "medianMs": 3882.5088749999995,
+      "errors": 0
+    },
+    "kimi-k2.6": {
+      "n": 44,
+      "passed": 41,
+      "accuracy": 0.9318181818181818,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 4
+        },
+        "combine": {
+          "n": 8,
+          "passed": 7
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 15
+        },
+        "compose": {
+          "n": 11,
+          "passed": 11
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.00015944659090909094,
+      "medianMs": 2826.832416000001,
+      "errors": 0
+    }
+  },
+  "spendUsd": 0.01353345
+}

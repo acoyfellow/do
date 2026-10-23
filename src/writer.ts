@@ -1,6 +1,5 @@
 import { Effect } from 'effect';
-import { type ClairicError, extract } from './clairic.ts';
-import type { Transport } from './clef.ts';
+import { ask, type ClefError, type ClefModel, type Transport } from './clef.ts';
 import { chat, firstJson, type LlmError, type LlmModel } from './llm.ts';
 
 export interface WriterField {
@@ -70,29 +69,23 @@ export interface Involvement {
   readonly costUsd: number;
   readonly ms: number;
 }
-export type FieldInvolvement = (request: WriterRequest) => Effect.Effect<Involvement, LlmError | ClairicError>;
+export type FieldInvolvement = (request: WriterRequest) => Effect.Effect<Involvement, LlmError | ClefError>;
 
-export function clairicInvolvement(transport: Transport, maxPNull = 0.5): FieldInvolvement {
+export const NEEDS_NEW_TEXT =
+  'Does completing `task` require typing text that does not appear word for word in the task, such as a composed message, a reformatted address, or words combined from several parts?';
+
+export function clefInvolvement(transport: Transport, model: ClefModel = 'clef', tau = 0.5): FieldInvolvement {
   return (request) =>
-    extract(
-      transport,
-      `Task: ${request.task}`,
-      Object.fromEntries(
-        request.fields.map((f) => [
-          f.key,
-          { type: 'text', instructions: `The user's task may require typing into the field labelled "${f.label}". Return the value to type, or null if the task does not involve this field.` },
-        ]),
-      ),
-    ).pipe(
-      Effect.map((res) => ({
-        keys: new Set(request.fields.filter((f) => (res.answers[f.key]?.pNull ?? 1) < maxPNull).map((f) => f.key)),
-        costUsd: res.costUsd,
-        ms: res.ms,
-      })),
+    ask(transport, { model, state: { task: request.task }, questions: { generate: { type: 'noul', instructions: NEEDS_NEW_TEXT } } }).pipe(
+      Effect.map((res) => {
+        const answer = res.answers.generate;
+        const needsNewText = answer?.type === 'noul' && answer.p >= tau;
+        return { keys: new Set(needsNewText ? request.fields.map((f) => f.key) : []), costUsd: res.costUsd, ms: res.ms };
+      }),
     );
 }
 
-export function fallbackWriter(primary: Writer, backup: Writer, involved: FieldInvolvement): (request: WriterRequest) => Effect.Effect<WriterResult & { readonly fellBack: readonly string[] }, LlmError | ClairicError> {
+export function fallbackWriter(primary: Writer, backup: Writer, involved: FieldInvolvement): (request: WriterRequest) => Effect.Effect<WriterResult & { readonly fellBack: readonly string[] }, LlmError | ClefError> {
   return (request) =>
     Effect.gen(function* () {
       const first = yield* primary(request);
@@ -118,5 +111,5 @@ export function writerFromSpec(transport: Transport, spec: string, opts: { think
   const [primary, backup] = spec.split('>') as [LlmModel, LlmModel | undefined];
   const first = llmWriter(transport, primary, opts);
   if (!backup) return (request: WriterRequest) => first(request).pipe(Effect.map((res) => ({ ...res, fellBack: [] as readonly string[] })));
-  return fallbackWriter(first, llmWriter(transport, backup, opts), clairicInvolvement(transport));
+  return fallbackWriter(first, llmWriter(transport, backup, opts), clefInvolvement(transport));
 }
