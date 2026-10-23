@@ -1,8 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { Effect } from 'effect';
-import type { LlmModel } from '../src/llm.ts';
-import { llmWriter, type WriterPrompt } from '../src/writer.ts';
+import { type WriterPrompt, writerFromSpec } from '../src/writer.ts';
 import { MOCK, pool, transport } from './lib.ts';
 import { WRITER_CASES, type WriterCase } from './writer-cases.ts';
 
@@ -13,6 +12,7 @@ export interface CaseResult {
   passed: boolean;
   fieldsPassed: Record<string, boolean>;
   values: Record<string, string | null>;
+  fellBack?: readonly string[];
   costUsd: number;
   ms: number;
   error?: string;
@@ -81,13 +81,13 @@ export function reportTable(summary: Record<string, WriterSummary>): string {
 
 if (import.meta.main) {
   const run = process.env.DO_RUN ?? 'writer-dev';
-  const writers = (process.env.DO_WRITERS ?? 'kimi-k2.6,glm-5.3-flash').split(',') as LlmModel[];
+  const writers = (process.env.DO_WRITERS ?? 'kimi-k2.6,glm-5.3-flash').split(',');
   const prompt = (process.env.DO_WRITER_PROMPT ?? 'plain') as WriterPrompt;
   const t = transport();
   const perWriter = Number(process.env.DO_WRITER_CONCURRENCY ?? 4);
   const results: CaseResult[] = [];
-  const evaluate = async ({ writer, c }: { writer: LlmModel; c: WriterCase }) => {
-    const write = llmWriter(t, writer, { prompt });
+  const evaluate = async ({ writer, c }: { writer: string; c: WriterCase }) => {
+    const write = writerFromSpec(t, writer, { prompt });
     const outcome = await Effect.runPromise(Effect.result(write({ task: c.task, fields: c.fields })));
     const values = outcome._tag === 'Success' ? { ...outcome.success.values } : {};
     const { passed, fieldsPassed } = scoreCase(c, values);
@@ -98,6 +98,7 @@ if (import.meta.main) {
       passed: outcome._tag === 'Success' && passed,
       fieldsPassed,
       values,
+      ...(outcome._tag === 'Success' && outcome.success.fellBack.length ? { fellBack: outcome.success.fellBack } : {}),
       costUsd: outcome._tag === 'Success' ? outcome.success.costUsd : 0,
       ms: outcome._tag === 'Success' ? outcome.success.ms : 0,
       ...(outcome._tag === 'Failure' ? { error: String((outcome.failure as { reason?: string }).reason ?? outcome.failure).slice(0, 200) } : {}),
@@ -109,7 +110,7 @@ if (import.meta.main) {
     if (!errored.length) break;
     for (const r of errored) results.splice(results.indexOf(r), 1);
     await pool(
-      errored.map((r) => ({ writer: r.writer as LlmModel, c: WRITER_CASES.find((c) => c.id === r.case) as WriterCase })),
+      errored.map((r) => ({ writer: r.writer, c: WRITER_CASES.find((c) => c.id === r.case) as WriterCase })),
       1,
       evaluate,
     );

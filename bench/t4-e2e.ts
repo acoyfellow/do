@@ -9,7 +9,7 @@ import { type ClairicField, extract } from '../src/clairic.ts';
 import { ask, type ClefModel, type Transport } from '../src/clef.ts';
 import { playwrightDevice } from './browser.ts';
 import { Hand } from '../src/hand.ts';
-import { llmWriter, type WriterPrompt } from '../src/writer.ts';
+import { type WriterPrompt, writerFromSpec } from '../src/writer.ts';
 import { chat, coordinateInstruction, firstJson, type LlmModel, type Msg, screenshotFrame, type Tool, toViewportPoint, withInstructions } from '../src/llm.ts';
 import { type Candidate, center, describe } from '../src/perceive.ts';
 import { axCandidates, cdp, screenshot, screenshotAt } from './browser.ts';
@@ -26,7 +26,7 @@ const TAU = Number(process.env.DO_TAU ?? 0.5);
 const ONLY = process.env.DO_TASKS?.split(',');
 const TASKS = process.env.DO_TASK_SET === 'hard' ? HARD_TASKS : process.env.DO_TASK_SET === 'all' ? [...BASE_TASKS, ...HARD_TASKS] : BASE_TASKS;
 const MAX_STEPS = 15;
-const WRITER_MODEL = process.env.DO_WRITER as LlmModel | undefined;
+const WRITER_SPEC = process.env.DO_WRITER;
 const WRITER_PROMPT = (process.env.DO_WRITER_PROMPT ?? 'plain') as WriterPrompt;
 const VIEW = { width: 1280, height: 800 };
 const out = runDir('t4');
@@ -348,9 +348,10 @@ async function needsGeneratedText(task: Task, r: Run): Promise<boolean> {
 }
 
 async function generatedFieldValues(page: Page, task: Task, r: Run, fields: Candidate[]): Promise<Map<Candidate, string[]>> {
-  const writerModel = (WRITER_MODEL ?? r.planner) as LlmModel;
+  const writerModel = WRITER_SPEC ?? r.planner;
   const writerFields = fields.map((c, i) => ({ key: fieldKey(i), label: c.name, role: c.role }));
-  const res = await Effect.runPromise(llmWriter(t, writerModel, { thinking: THINKING, prompt: WRITER_PROMPT })({ task: task.text, fields: writerFields }));
+  const res = await Effect.runPromise(writerFromSpec(t, writerModel, { thinking: THINKING, prompt: WRITER_PROMPT })({ task: task.text, fields: writerFields }));
+  if (res.fellBack.length) r.trace.push({ writerFellBack: res.fellBack });
   r.llmUsd += res.costUsd;
   r.llmIn += res.inputTokens;
   r.llmOut += res.outputTokens;
