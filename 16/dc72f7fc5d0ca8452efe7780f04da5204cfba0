@@ -1,0 +1,27 @@
+bench/check-fallback.ts
+  s_a90e6f4617f964::t_5e4795af74075d 1-32
+bench/fallback.test.ts
+  s_a90e6f4617f964::t_3eab4286a543cc 1-48
+bench/t4-e2e.ts
+  s_a90e6f4617f964::t_0e235aa816cd38 12,29,351,353-354
+bench/writer-eval.ts
+  s_a90e6f4617f964::t_bee71e9fa341dc 4,15,84,89-90,101,113
+src/writer.ts
+  s_a90e6f4617f964::t_d2fcfe2bf9d2cd 2,67-122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "16dc72f7fc5d0ca8452efe7780f04da5204cfba0",
+  "prompts": {},
+  "sessions": {
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
