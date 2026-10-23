@@ -1,0 +1,53 @@
+README.md
+  s_a90e6f4617f964::t_725e616e55bb26 30,40,51,116-117,120-149
+bench/baseline.json
+  s_a90e6f4617f964::t_a6ad7a41432958 2
+bench/runs/bench-4-glm/REPORT.md
+  s_a90e6f4617f964::t_1844bc646f570d 1-54
+bench/runs/bench-4-glm/manifest.json
+  s_a90e6f4617f964::t_54da02ba18a246 1-31
+bench/runs/bench-4-glm/summary.json
+  s_a90e6f4617f964::t_3e29d3c94b67e0 1-20
+bench/runs/bench-4-glm/t4.jsonl
+  s_a90e6f4617f964::t_a179dc10837ecb 1-105
+bench/runs/bench-4-glm/timing.json
+  s_a90e6f4617f964::t_297aa39f8e19a5 1-11
+bench/runs/bench-4/REPORT.md
+  s_5ddfc8f4108175::t_63d97e3fb479b6 1-56
+bench/runs/bench-4/manifest.json
+  s_5ddfc8f4108175::t_7f985ae0b94312 1-30
+bench/runs/bench-4/summary.json
+  s_5ddfc8f4108175::t_a7f03e6aeac80e 1-35
+bench/runs/bench-4/t4.jsonl
+  s_5ddfc8f4108175::t_3d02e1ddce36f6 1-210
+bench/runs/bench-4/timing.json
+  s_5ddfc8f4108175::t_ea448eb6d92641 1-11
+llms.txt
+  s_a90e6f4617f964::t_da2f852969959c 5-7
+package.json
+  s_a90e6f4617f964::t_6d8dc853864b49 27-28,53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a92c7cb649283e501e6aa85965defc14a7ba73bf",
+  "prompts": {},
+  "sessions": {
+    "s_5ddfc8f4108175": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a0fc06-d951-77a8-8358-cd5dae6891bd",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    },
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
