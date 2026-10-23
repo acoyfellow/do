@@ -1,0 +1,27 @@
+bench/gate.test.ts
+  s_a90e6f4617f964::t_a218365777eb53 2,14-23
+bench/gate.ts
+  s_a90e6f4617f964::t_93de5a93669daf 7-10,22-26,28,41-55,61-65,67-68
+bench/t4-e2e.ts
+  s_a90e6f4617f964::t_c8dd2f3c43f397 381-384
+bench/writer-cases.ts
+  s_a90e6f4617f964::t_fb5107b32476e3 61-74
+bench/writer-eval.ts
+  s_a90e6f4617f964::t_10b1e54dbb1bf4 107-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7366995540175d1e5900273479d972111322d354",
+  "prompts": {},
+  "sessions": {
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
