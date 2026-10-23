@@ -104,6 +104,16 @@ if (import.meta.main) {
     });
   };
   await Promise.all(writers.map((writer) => pool(WRITER_CASES.map((c) => ({ writer, c })), perWriter, evaluate)));
+  for (let pass = 0; pass < 2; pass++) {
+    const errored = results.filter((r) => r.error);
+    if (!errored.length) break;
+    for (const r of errored) results.splice(results.indexOf(r), 1);
+    await pool(
+      errored.map((r) => ({ writer: r.writer as LlmModel, c: WRITER_CASES.find((c) => c.id === r.case) as WriterCase })),
+      1,
+      evaluate,
+    );
+  }
   const dir = `bench/runs/${run}${MOCK ? '-mock' : ''}`;
   mkdirSync(dir, { recursive: true });
   results.sort((a, b) => a.writer.localeCompare(b.writer) || a.case.localeCompare(b.case));

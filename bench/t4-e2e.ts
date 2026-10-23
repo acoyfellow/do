@@ -378,7 +378,10 @@ async function relay(page: Page, task: Task, r: Run) {
       const generated = await generatedFieldValues(page, task, r, fresh);
       for (const [c, v] of generated) generatedCache.set(`${c.role}:${c.name}`, v);
     }
-    for (const c of textFields) values.set(c, generatedCache.get(`${c.role}:${c.name}`) ?? []);
+    for (const c of textFields) {
+      const written = generatedCache.get(`${c.role}:${c.name}`) ?? [];
+      if (written.length) values.set(c, written);
+    }
     return values;
   });
 }
