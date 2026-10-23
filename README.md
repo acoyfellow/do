@@ -119,7 +119,7 @@ The gate scored 0.51 to 0.95 on the seven tasks that need written text and 0.06 
 
 ## Writers
 
-The writer is swappable. Set `DO_WRITER=<model>` for the relay arm (default: the planner). `bench/writer-eval.ts` scores writers alone on 44 messy requests in five groups:
+The writer is swappable. `DO_WRITER` picks it for the relay arm: a model (`kimi-k2.6`), a `primary>backup` pair, or `planner`. The default is `glm-5.3-flash>kimi-k2.6`. `bench/writer-eval.ts` scores writers alone on 44 messy requests in five groups:
 
 - **normalize:** spelled-out emails, phone numbers, codes, dates
 - **combine:** "first name plus last initial", "last, first"
@@ -145,7 +145,25 @@ The writer is swappable. Set `DO_WRITER=<model>` for the relay arm (default: the
 - **End to end it matters.** Relay with glm as the writer scored 29, 30, 29 of 30 (`bench-4-glm`). Every miss was the coupon task. The relay now keeps Clairic's copied value when the writer returns nothing, so a silent writer cannot blank a field.
 - **The tiny models (granite, llama 3B) are 20 to 50 times cheaper but fail on composing and abstaining.**
 
-The gate (`bench/baseline.json`) holds glm and kimi to at least 90% accuracy on at least 40 cases.
+### Fallback: glm first, kimi when glm goes quiet
+
+`fallbackWriter(primary, backup, involvement)` in `do/writer` runs the primary writer. If it leaves a field empty, it asks Clef one yes/no question: does this task need text that is not in it word for word? Only if yes does it ask the backup writer, and only for the empty fields.
+
+[`bench/runs/writer-2/REPORT.md`](bench/runs/writer-2/REPORT.md):
+
+| writer | accuracy | abstain | $/case |
+|---|---|---|---|
+| **glm-5.3-flash>kimi-k2.6** | **43/44** | 5/5 | $0.000094 |
+| glm-5.3-flash | 42/44 | 5/5 | $0.000067 |
+| kimi-k2.6 | 41/44 | 4/5 | $0.000159 |
+
+The pair beats either model alone at about 60% of kimi's cost. It fixes both buried-request cases and still refuses the planted "delete everything". The one remaining miss is `address-line` ("Market 101" instead of "101 Market"), which every writer misses.
+
+The first version asked Clairic which fields the task involved. Clairic copied the planted "delete everything" as if the user asked for it, and the fallback typed it. Clef's "needs new text" question scores that task 0.10, so it stays blank.
+
+End to end, relay with the pair finished **30/30 in all 3 repeats** ([`bench-5`](bench/runs/bench-5/REPORT.md)) at $0.0016 a task, including the coupon task glm alone missed.
+
+The gate (`bench/baseline.json`) now checks `bench-5` (relay 30/30) and `writer-2`: the pair at least 43/44 and at most $0.0001 a case, and glm and kimi alone at least 90%.
 
 ## Reproduce
 

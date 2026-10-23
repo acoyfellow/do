@@ -1,19 +1,19 @@
 {
-  "run": "bench-4",
+  "run": "bench-5",
   "arms": {
     "relay:kimi-k2.6": {
       "minSuccess": 30,
       "maxUsdPerTask": 0.002
-    },
-    "duet": {
-      "minSuccess": 25,
-      "maxUsdPerTask": 0.002
     }
   },
   "writer": {
-    "run": "writer-1",
-    "minCases": 40,
+    "run": "writer-2",
+    "minCases": 44,
     "writers": {
+      "glm-5.3-flash>kimi-k2.6": {
+        "minAccuracy": 0.9772727272727273,
+        "maxUsdPerCase": 0.0001
+      },
       "glm-5.3-flash": {
         "minAccuracy": 0.9,
         "maxUsdPerCase": 0.0001

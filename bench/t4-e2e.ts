@@ -26,7 +26,8 @@ const TAU = Number(process.env.DO_TAU ?? 0.5);
 const ONLY = process.env.DO_TASKS?.split(',');
 const TASKS = process.env.DO_TASK_SET === 'hard' ? HARD_TASKS : process.env.DO_TASK_SET === 'all' ? [...BASE_TASKS, ...HARD_TASKS] : BASE_TASKS;
 const MAX_STEPS = 15;
-const WRITER_SPEC = process.env.DO_WRITER;
+const DEFAULT_WRITER = 'glm-5.3-flash>kimi-k2.6';
+const WRITER_SPEC = process.env.DO_WRITER ?? DEFAULT_WRITER;
 const WRITER_PROMPT = (process.env.DO_WRITER_PROMPT ?? 'plain') as WriterPrompt;
 const VIEW = { width: 1280, height: 800 };
 const out = runDir('t4');
@@ -348,7 +349,7 @@ async function needsGeneratedText(task: Task, r: Run): Promise<boolean> {
 }
 
 async function generatedFieldValues(page: Page, task: Task, r: Run, fields: Candidate[]): Promise<Map<Candidate, string[]>> {
-  const writerModel = WRITER_SPEC ?? r.planner;
+  const writerModel = WRITER_SPEC === 'planner' ? r.planner : WRITER_SPEC;
   const writerFields = fields.map((c, i) => ({ key: fieldKey(i), label: c.name, role: c.role }));
   const res = await Effect.runPromise(writerFromSpec(t, writerModel, { thinking: THINKING, prompt: WRITER_PROMPT })({ task: task.text, fields: writerFields }));
   if (res.fellBack.length) r.trace.push({ writerFellBack: res.fellBack });

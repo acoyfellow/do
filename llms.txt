@@ -4,7 +4,7 @@ Computer-use library. A device lists the controls on screen, Clef (a small Cloud
 
 Import paths: do/hand, do/clef, do/clairic, do/steer, do/llm, do/writer, do/perceive.
 
-Writer (swappable): `llmWriter(transport, 'glm-5.3-flash')({ task, fields: [{ key, label, role }] })` returns `{ values: { [key]: string | null }, costUsd, ms }`. Best measured writer: glm-5.3-flash (41/44, $0.00006/case); kimi-k2.6 ties on accuracy and handles values buried in long tasks better.
+Writer (swappable): `llmWriter(transport, 'kimi-k2.6')({ task, fields: [{ key, label, role }] })` returns `{ values: { [key]: string | null }, costUsd, ms }`. Best measured writer: writerFromSpec(transport, 'glm-5.3-flash>kimi-k2.6'), 43/44 at $0.00009/case. glm writes first; when it leaves a field empty and Clef says the task needs new text, kimi fills only that field.
 
 Use:
 ```ts
