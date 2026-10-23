@@ -1,0 +1,17 @@
+{
+  "run": "writer-1",
+  "mock": false,
+  "commit": "8fa28c978f28e06caed1c853c3fd9a7e250a2b04",
+  "srcCommit": "8fa28c978f28e06caed1c853c3fd9a7e250a2b04",
+  "dirty": true,
+  "writers": [
+    "kimi-k2.6",
+    "qwen3.8-27b",
+    "glm-5.3-flash",
+    "gemma-4-26b",
+    "llama-3.2-3b",
+    "granite-4.0-micro"
+  ],
+  "prompt": "plain",
+  "cases": 44
+}

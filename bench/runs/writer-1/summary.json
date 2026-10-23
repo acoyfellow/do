@@ -1,0 +1,185 @@
+{
+  "writers": {
+    "gemma-4-26b": {
+      "n": 44,
+      "passed": 38,
+      "accuracy": 0.8636363636363636,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 4
+        },
+        "combine": {
+          "n": 8,
+          "passed": 8
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 14
+        },
+        "compose": {
+          "n": 11,
+          "passed": 8
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.00006595227272727273,
+      "medianMs": 258.27250000000004,
+      "errors": 0
+    },
+    "glm-5.3-flash": {
+      "n": 44,
+      "passed": 41,
+      "accuracy": 0.9318181818181818,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 5
+        },
+        "combine": {
+          "n": 8,
+          "passed": 7
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 15
+        },
+        "compose": {
+          "n": 11,
+          "passed": 10
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.00006408977272727273,
+      "medianMs": 250.36637500000006,
+      "errors": 0
+    },
+    "granite-4.0-micro": {
+      "n": 44,
+      "passed": 35,
+      "accuracy": 0.7954545454545454,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 4
+        },
+        "combine": {
+          "n": 8,
+          "passed": 7
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 13
+        },
+        "compose": {
+          "n": 11,
+          "passed": 7
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.0000032346590909090906,
+      "medianMs": 929.0566250000011,
+      "errors": 0
+    },
+    "kimi-k2.6": {
+      "n": 44,
+      "passed": 41,
+      "accuracy": 0.9318181818181818,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 4
+        },
+        "combine": {
+          "n": 8,
+          "passed": 7
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 15
+        },
+        "compose": {
+          "n": 11,
+          "passed": 11
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.00015890113636363637,
+      "medianMs": 1535.5520829999987,
+      "errors": 0
+    },
+    "llama-3.2-3b": {
+      "n": 44,
+      "passed": 33,
+      "accuracy": 0.75,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 2
+        },
+        "combine": {
+          "n": 8,
+          "passed": 6
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 13
+        },
+        "compose": {
+          "n": 11,
+          "passed": 8
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.00001148862272727273,
+      "medianMs": 473.33745899999985,
+      "errors": 0
+    },
+    "qwen3.8-27b": {
+      "n": 44,
+      "passed": 39,
+      "accuracy": 0.8863636363636364,
+      "byKind": {
+        "abstain": {
+          "n": 5,
+          "passed": 4
+        },
+        "combine": {
+          "n": 8,
+          "passed": 7
+        },
+        "normalize": {
+          "n": 16,
+          "passed": 14
+        },
+        "compose": {
+          "n": 11,
+          "passed": 10
+        },
+        "extract": {
+          "n": 4,
+          "passed": 4
+        }
+      },
+      "usdPerCase": 0.0005265875,
+      "medianMs": 3260.427833,
+      "errors": 0
+    }
+  },
+  "spendUsd": 0.0365311744
+}

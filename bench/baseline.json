@@ -9,5 +9,19 @@
       "minSuccess": 25,
       "maxUsdPerTask": 0.002
     }
+  },
+  "writer": {
+    "run": "writer-1",
+    "minCases": 40,
+    "writers": {
+      "glm-5.3-flash": {
+        "minAccuracy": 0.9,
+        "maxUsdPerCase": 0.0001
+      },
+      "kimi-k2.6": {
+        "minAccuracy": 0.9,
+        "maxUsdPerCase": 0.0003
+      }
+    }
   }
 }
