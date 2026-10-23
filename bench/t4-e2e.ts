@@ -9,6 +9,7 @@ import { type ClairicField, extract } from '../src/clairic.ts';
 import { ask, type ClefModel, type Transport } from '../src/clef.ts';
 import { playwrightDevice } from './browser.ts';
 import { Hand } from '../src/hand.ts';
+import { llmWriter, type WriterPrompt } from '../src/writer.ts';
 import { chat, coordinateInstruction, firstJson, type LlmModel, type Msg, screenshotFrame, type Tool, toViewportPoint, withInstructions } from '../src/llm.ts';
 import { type Candidate, center, describe } from '../src/perceive.ts';
 import { axCandidates, cdp, screenshot, screenshotAt } from './browser.ts';
@@ -25,6 +26,8 @@ const TAU = Number(process.env.DO_TAU ?? 0.5);
 const ONLY = process.env.DO_TASKS?.split(',');
 const TASKS = process.env.DO_TASK_SET === 'hard' ? HARD_TASKS : process.env.DO_TASK_SET === 'all' ? [...BASE_TASKS, ...HARD_TASKS] : BASE_TASKS;
 const MAX_STEPS = 15;
+const WRITER_MODEL = process.env.DO_WRITER as LlmModel | undefined;
+const WRITER_PROMPT = (process.env.DO_WRITER_PROMPT ?? 'plain') as WriterPrompt;
 const VIEW = { width: 1280, height: 800 };
 const out = runDir('t4');
 const t = transport();
@@ -345,35 +348,20 @@ async function needsGeneratedText(task: Task, r: Run): Promise<boolean> {
 }
 
 async function generatedFieldValues(page: Page, task: Task, r: Run, fields: Candidate[]): Promise<Map<Candidate, string[]>> {
-  const labels = fields.map((c, i) => `${fieldKey(i)}: ${c.role} "${c.name}"`).join('\n');
-  const res = await Effect.runPromise(
-    chat(
-      t,
-      r.planner as LlmModel,
-      [
-        {
-          role: 'system',
-          content:
-            'You write the exact text to type into form fields so a user task gets done. Reply with only a JSON object mapping each field key to the final text, or null when the task does not involve that field.',
-        },
-        { role: 'user', content: `Task: ${task.text}\nFields on screen:\n${labels}` },
-      ],
-      { maxTokens: 400, thinking: THINKING },
-    ),
-  );
+  const writerModel = (WRITER_MODEL ?? r.planner) as LlmModel;
+  const writerFields = fields.map((c, i) => ({ key: fieldKey(i), label: c.name, role: c.role }));
+  const res = await Effect.runPromise(llmWriter(t, writerModel, { thinking: THINKING, prompt: WRITER_PROMPT })({ task: task.text, fields: writerFields }));
   r.llmUsd += res.costUsd;
   r.llmIn += res.inputTokens;
   r.llmOut += res.outputTokens;
-  const answers = (firstJson(res.text) ?? {}) as Record<string, unknown>;
   const result = new Map<Candidate, string[]>();
   fields.forEach((c, i) => {
-    const value = answers[fieldKey(i)];
-    const text = typeof value === 'string' && value.trim() ? value : null;
+    const text = res.values[fieldKey(i)] ?? null;
     result.set(c, text ? [text] : []);
-    r.trace.push({ generated: c.name, value: text });
+    r.trace.push({ generated: c.name, value: text, writer: writerModel });
   });
   const filled = fields.map((c) => [c.name, result.get(c)?.[0]] as const).filter(([, v]) => v);
-  await hud(page, { title: `Writer (${r.planner})`, status: filled.length ? filled.map(([n, v]) => `${n}: "${v}"`).join(' · ') : 'No values needed on this screen' });
+  await hud(page, { title: `Writer (${writerModel})`, status: filled.length ? filled.map(([n, v]) => `${n}: "${v}"`).join(' · ') : 'No values needed on this screen' });
   return result;
 }
 
