@@ -2,8 +2,8 @@
   "writers": {
     "glm-5.3-flash": {
       "n": 44,
-      "passed": 40,
-      "accuracy": 0.9090909090909091,
+      "passed": 42,
+      "accuracy": 0.9545454545454546,
       "byKind": {
         "abstain": {
           "n": 5,
@@ -15,29 +15,29 @@
         },
         "normalize": {
           "n": 16,
-          "passed": 14
+          "passed": 15
         },
         "compose": {
           "n": 11,
-          "passed": 10
+          "passed": 11
         },
         "extract": {
           "n": 4,
           "passed": 4
         }
       },
-      "usdPerCase": 0.00007012386363636364,
-      "medianMs": 3339.9837920000064,
+      "usdPerCase": 0.00006689659090909091,
+      "medianMs": 3782.071,
       "errors": 0
     },
     "glm-5.3-flash>kimi-k2.6": {
       "n": 44,
-      "passed": 41,
-      "accuracy": 0.9318181818181818,
+      "passed": 43,
+      "accuracy": 0.9772727272727273,
       "byKind": {
         "abstain": {
           "n": 5,
-          "passed": 4
+          "passed": 5
         },
         "combine": {
           "n": 8,
@@ -49,15 +49,15 @@
         },
         "compose": {
           "n": 11,
-          "passed": 10
+          "passed": 11
         },
         "extract": {
           "n": 4,
           "passed": 4
         }
       },
-      "usdPerCase": 0.00007800795454545452,
-      "medianMs": 3882.5088749999995,
+      "usdPerCase": 0.00009444159090909093,
+      "medianMs": 4292.793874999999,
       "errors": 0
     },
     "kimi-k2.6": {
@@ -86,10 +86,10 @@
           "passed": 4
         }
       },
-      "usdPerCase": 0.00015944659090909094,
-      "medianMs": 2826.832416000001,
+      "usdPerCase": 0.0001594465909090909,
+      "medianMs": 2700.650791,
       "errors": 0
     }
   },
-  "spendUsd": 0.01353345
+  "spendUsd": 0.014114530000000004
 }
