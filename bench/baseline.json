@@ -1,5 +1,5 @@
 {
-  "run": "bench-3",
+  "run": "bench-4",
   "arms": {
     "relay:kimi-k2.6": {
       "minSuccess": 30,

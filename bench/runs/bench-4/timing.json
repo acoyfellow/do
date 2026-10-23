@@ -1,0 +1,11 @@
+{
+  "run": "bench-4",
+  "wallMs": 67746,
+  "stepsMs": {
+    "bench/probe.ts": 5895,
+    "bench/t4-e2e.ts": 61320,
+    "bench/report.ts": 450
+  },
+  "totalInFlight": 160,
+  "perTestInFlight": 160
+}

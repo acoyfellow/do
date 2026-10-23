@@ -1,0 +1,35 @@
+{
+  "t4": {
+    "duet": {
+      "successMean": 25,
+      "successMin": 25,
+      "successMax": 25,
+      "successes": [
+        25,
+        25,
+        25
+      ],
+      "n": 30,
+      "repeats": 3,
+      "unusableStepRate": 0,
+      "medianSecondsPerTask": 3.303554957999993,
+      "usdPerTask": 0.0014995726666666665
+    },
+    "relay:kimi-k2.6": {
+      "successMean": 30,
+      "successMin": 30,
+      "successMax": 30,
+      "successes": [
+        30,
+        30,
+        30
+      ],
+      "n": 30,
+      "repeats": 3,
+      "unusableStepRate": 0,
+      "medianSecondsPerTask": 3.5572944580000003,
+      "usdPerTask": 0.0015859846666666662
+    }
+  },
+  "spendUsd": 0.3193694400000002
+}

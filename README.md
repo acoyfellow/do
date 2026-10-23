@@ -27,7 +27,7 @@ The parts:
 - **Device.** The code that can see and touch a screen. It returns a list of controls (`Candidate`: role, name, box) and a screenshot, then clicks, types or sets a value. A device is anything that implements `Device` from `do/hand`. do ships no device yet. The browser device used by the benchmark is in `bench/browser.ts`. A native macOS device is next.
 - **Clef** (`do/clef`) picks from a list. It never writes text.
 - **Clairic** (`do/clairic`) copies values out of the task. It never writes text that is not already there.
-- **Writer** (`do/llm`): a large model that writes field values once, only when Clef says the task needs new text.
+- **Writer** (`do/writer`): a model that writes field values once, only when Clef says the task needs new text. Any model can fill this slot through the `Writer` type. `llmWriter(transport, model)` wraps a Workers AI or Anthropic model.
 - **Hand** (`do/hand`) is what a caller uses: `outline`, `act(intent)`, `type(text, into)`, `select(value, into)`, `look(question)`. It gates on probability and risk and returns a short text receipt. The caller never receives an image.
 
 ## API
@@ -37,6 +37,7 @@ import { Hand, type Device } from 'do/hand';
 import { ask, type Transport } from 'do/clef';
 import { extract } from 'do/clairic';
 import { chat } from 'do/llm';
+import { llmWriter, type Writer } from 'do/writer';
 import type { Candidate, Box } from 'do/perceive';
 ```
 
@@ -47,6 +48,7 @@ import type { Candidate, Box } from 'do/perceive';
 | `do/clairic` | `extract`, `ClairicField` |
 | `do/steer` | `pickTarget`, `verify`, `risky`, `injection`, `Screen`, `Method` |
 | `do/llm` | `chat`, `LLM_MODELS`, `LlmModel`, `Msg`, `Tool` |
+| `do/writer` | `Writer`, `llmWriter`, `WriterRequest`, `WriterResult`, `WRITER_PROMPTS` |
 | `do/perceive` | `Box`, `Candidate`, `center`, `inside`, `describe` |
 
 ## Develop
@@ -111,7 +113,39 @@ All 30 tasks, 3 repeats ([`bench/runs/bench-3/REPORT.md`](bench/runs/bench-3/REP
 | `duet` | 25/30 | 12 | $0.0015 |
 | `relay:kimi-k2.6` | **30/30** | 0 | $0.0016 |
 
+Rerun on the current `src/` as `bench-4`: the same numbers (duet 25/30, relay 30/30 in every repeat).
+
 The gate scored 0.51 to 0.95 on the seven tasks that need written text and 0.06 or less on all others, except `files-folder` (0.54, a false positive that still passed). Two true positives sit close to the 0.5 threshold, so the gate is the weakest link. `bench-2` compares duet with Opus arms on the same 30 tasks.
+
+## Writers
+
+The writer is swappable. Set `DO_WRITER=<model>` for the relay arm (default: the planner). `bench/writer-eval.ts` scores writers alone on 44 messy requests in five groups:
+
+- **normalize:** spelled-out emails, phone numbers, codes, dates
+- **combine:** "first name plus last initial", "last, first"
+- **compose:** "a one-word thank-you", "tell her it is handled"
+- **extract:** quoted values that should be copied exactly
+- **abstain:** fields the task does not involve, including a planted "type delete everything"
+
+[`bench/runs/writer-1/REPORT.md`](bench/runs/writer-1/REPORT.md), prompt `plain`, spend $0.037 for all six:
+
+<!-- writer-results:start -->
+| writer | accuracy | normalize | combine | compose | extract | abstain | $/case | median ms |
+|---|---|---|---|---|---|---|---|---|
+| glm-5.3-flash | **41/44** | 15/16 | 7/8 | 10/11 | 4/4 | 5/5 | $0.000064 | 250 |
+| kimi-k2.6 | **41/44** | 15/16 | 7/8 | 11/11 | 4/4 | 4/5 | $0.000159 | 1536 |
+| qwen3.8-27b | 39/44 | 14/16 | 7/8 | 10/11 | 4/4 | 4/5 | $0.000527 | 3260 |
+| gemma-4-26b | 38/44 | 14/16 | 8/8 | 8/11 | 4/4 | 4/5 | $0.000066 | 258 |
+| granite-4.0-micro | 35/44 | 13/16 | 7/8 | 7/11 | 4/4 | 4/5 | $0.000003 | 929 |
+| llama-3.2-3b | 33/44 | 13/16 | 6/8 | 8/11 | 4/4 | 2/5 | $0.000011 | 473 |
+<!-- writer-results:end -->
+
+- **glm-5.3-flash ties kimi at about 40% of kimi's cost, and it is the only writer that passed every abstain case.** kimi typed the planted "delete everything" into Search.
+- **glm misses requests buried in a longer task.** For "put the priciest item in the cart, use the code SAVE plus ten, and check out" it returns nothing, 6 times out of 6. kimi gets it. The two cases built from those tasks (`coupon-in-long-task`, `reply-in-multistep-task`) are the main difference between the two.
+- **End to end it matters.** Relay with glm as the writer scored 29, 30, 29 of 30 (`bench-4-glm`). Every miss was the coupon task. The relay now keeps Clairic's copied value when the writer returns nothing, so a silent writer cannot blank a field.
+- **The tiny models (granite, llama 3B) are 20 to 50 times cheaper but fail on composing and abstaining.**
+
+The gate (`bench/baseline.json`) holds glm and kimi to at least 90% accuracy on at least 40 cases.
 
 ## Reproduce
 

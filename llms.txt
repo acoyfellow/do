@@ -2,7 +2,9 @@
 
 Computer-use library. A device lists the controls on screen, Clef (a small Cloudflare model) picks one with a probability, the device acts, and Clef checks the result. Clef and Clairic never write text. A large model writes field values only when the task needs new text.
 
-Import paths: do/hand, do/clef, do/clairic, do/steer, do/llm, do/perceive.
+Import paths: do/hand, do/clef, do/clairic, do/steer, do/llm, do/writer, do/perceive.
+
+Writer (swappable): `llmWriter(transport, 'glm-5.3-flash')({ task, fields: [{ key, label, role }] })` returns `{ values: { [key]: string | null }, costUsd, ms }`. Best measured writer: glm-5.3-flash (41/44, $0.00006/case); kimi-k2.6 ties on accuracy and handles values buried in long tasks better.
 
 Use:
 ```ts
