@@ -8,3 +8,6 @@ bench/runs/video-*
 bench/runs/smoke-*
 bench/runs/writer-smoke*
 bench/runs/writer-dev*
+.demo
+native/ax
+native/ax-dump

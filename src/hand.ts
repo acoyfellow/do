@@ -9,6 +9,7 @@ import { injection, type Method, pickTarget, risky, type Screen, verify } from '
 export interface Device extends Screen {
   candidates(): Promise<Candidate[]>;
   click(p: { x: number; y: number }): Promise<void>;
+  press?(c: Candidate): Promise<void>;
   typeInto(c: Candidate, text: string): Promise<void>;
   setValue(c: Candidate, value: string): Promise<boolean>;
   settle(): Promise<void>;
@@ -126,7 +127,8 @@ export class Hand {
         ms: performance.now() - t0,
       });
     }
-    await this.d.click(pick.point);
+    if (chosen && this.d.press) await this.d.press(chosen);
+    else await this.d.click(pick.point);
     await this.d.settle();
     let achieved: number | undefined;
     if (this.opts.verify) {
