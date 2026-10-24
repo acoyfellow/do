@@ -1,0 +1,31 @@
+.gitignore
+  s_a90e6f4617f964::t_c4dca4691fa225 11-13
+native/ax.swift
+  s_a90e6f4617f964::t_300215b7479477 1-178
+native/demo-desktop.ts
+  s_a90e6f4617f964::t_08d748d7d9de0e 1-41
+native/spike-grounding.ts
+  s_a90e6f4617f964::t_9a4dd18d45cb63 1-63
+native/try-hand.ts
+  s_a90e6f4617f964::t_cb81884754e756 1-13
+src/devices/macos.ts
+  s_a90e6f4617f964::t_f34eb8728563a0 1-154
+src/hand.ts
+  s_a90e6f4617f964::t_5f3a5cbc92e4ed 12,130-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "67dc9c353e34f8fbe5f00e0ce583d9b2f0ad5b8c",
+  "prompts": {},
+  "sessions": {
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
