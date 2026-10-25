@@ -91,11 +91,18 @@ export async function hud(page: Page, lines: Omit<HudEvent, 'atMs'>) {
 }
 
 export const MOCK = process.env.DO_MOCK === '1';
+export const DEFAULT_WRITER = 'glm-5.3-flash>kimi-k2.6';
 export const THINKING = process.env.DO_THINKING === '1';
 export function limited(inner: Transport, n: number): Transport {
   let active = 0;
   const waiting: (() => void)[] = [];
-  const acquire = () => (active < n ? (active++, Promise.resolve()) : new Promise<void>((resume) => waiting.push(resume)));
+  const acquire = (): Promise<void> => {
+    if (active < n) {
+      active++;
+      return Promise.resolve();
+    }
+    return new Promise<void>((resume) => waiting.push(resume));
+  };
   const release = () => {
     const resume = waiting.shift();
     if (resume) resume();

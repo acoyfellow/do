@@ -1,5 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { Effect } from 'effect';
 import { type WriterPrompt, writerFromSpec } from '../src/writer.ts';
 import { MOCK, pool, transport } from './lib.ts';
@@ -104,7 +104,15 @@ if (import.meta.main) {
       ...(outcome._tag === 'Failure' ? { error: String((outcome.failure as { reason?: string }).reason ?? outcome.failure).slice(0, 200) } : {}),
     });
   };
-  await Promise.all(writers.map((writer) => pool(WRITER_CASES.map((c) => ({ writer, c })), perWriter, evaluate)));
+  await Promise.all(
+    writers.map((writer) =>
+      pool(
+        WRITER_CASES.map((c) => ({ writer, c })),
+        perWriter,
+        evaluate,
+      ),
+    ),
+  );
   for (let pass = 0; pass < 2; pass++) {
     const errored = results.filter((r) => r.error);
     if (!errored.length) break;
@@ -128,7 +136,10 @@ if (import.meta.main) {
     `${JSON.stringify({ run, mock: MOCK, commit: git('rev-parse HEAD'), srcCommit: git('log -1 --format=%H -- src'), dirty: git('status --porcelain -- src bench') !== '', writers, prompt, cases: WRITER_CASES.length }, null, 2)}\n`,
   );
   const table = reportTable(summary);
-  writeFileSync(`${dir}/REPORT.md`, `# Writer eval: ${run}\n\n${WRITER_CASES.length} cases, prompt \`${prompt}\`. Spend $${spendUsd.toFixed(4)}.\n\n${table}\n`);
+  writeFileSync(
+    `${dir}/REPORT.md`,
+    `# Writer eval: ${run}\n\n${WRITER_CASES.length} cases, prompt \`${prompt}\`. Spend $${spendUsd.toFixed(4)}.\n\n${table}\n`,
+  );
   console.log(table);
   console.log(`spend $${spendUsd.toFixed(4)} -> ${dir}`);
 }

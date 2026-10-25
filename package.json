@@ -51,10 +51,12 @@
     "./llm": "./src/llm.ts",
     "./anthropic": "./src/anthropic.ts",
     "./credentials": "./src/credentials.ts",
-    "./writer": "./src/writer.ts"
+    "./writer": "./src/writer.ts",
+    "./devices/macos": "./src/devices/macos.ts"
   },
   "files": [
     "src",
+    "native/ax.swift",
     "README.md",
     "LICENSE",
     "llms.txt"

@@ -6,15 +6,14 @@
 import { Effect } from 'effect';
 import type { CDPSession, Page } from 'playwright';
 import { type ClairicField, extract } from '../src/clairic.ts';
-import { ask, type ClefModel, type Transport } from '../src/clef.ts';
-import { playwrightDevice } from './browser.ts';
+import { ask, type ClefModel } from '../src/clef.ts';
 import { Hand } from '../src/hand.ts';
-import { type WriterPrompt, writerFromSpec } from '../src/writer.ts';
 import { chat, coordinateInstruction, firstJson, type LlmModel, type Msg, screenshotFrame, type Tool, toViewportPoint, withInstructions } from '../src/llm.ts';
 import { type Candidate, center, describe } from '../src/perceive.ts';
-import { axCandidates, cdp, screenshot, screenshotAt } from './browser.ts';
 import type { Method } from '../src/steer.ts';
-import { close, hud, jsonl, open, pool, RECORD_DIR, recordingLog, runDir, type ScreenSpec, THINKING, transport } from './lib.ts';
+import { type WriterPrompt, writerFromSpec } from '../src/writer.ts';
+import { axCandidates, cdp, playwrightDevice, screenshot, screenshotAt } from './browser.ts';
+import { close, DEFAULT_WRITER, hud, jsonl, open, pool, RECORD_DIR, recordingLog, runDir, type ScreenSpec, THINKING, transport } from './lib.ts';
 import { TASKS as BASE_TASKS, HARD_TASKS, INJ_TASKS, type Task } from './tasks.ts';
 
 const ARMS = (process.env.DO_ARMS ?? 'vision,baton,pilot').split(',');
@@ -26,7 +25,6 @@ const TAU = Number(process.env.DO_TAU ?? 0.5);
 const ONLY = process.env.DO_TASKS?.split(',');
 const TASKS = process.env.DO_TASK_SET === 'hard' ? HARD_TASKS : process.env.DO_TASK_SET === 'all' ? [...BASE_TASKS, ...HARD_TASKS] : BASE_TASKS;
 const MAX_STEPS = 15;
-const DEFAULT_WRITER = 'glm-5.3-flash>kimi-k2.6';
 const WRITER_SPEC = process.env.DO_WRITER ?? DEFAULT_WRITER;
 const WRITER_PROMPT = (process.env.DO_WRITER_PROMPT ?? 'plain') as WriterPrompt;
 const VIEW = { width: 1280, height: 800 };
@@ -262,7 +260,7 @@ const quotedLiterals = (task: Task) => [...task.text.matchAll(/"([^"]+)"/g)].map
 
 const FIELD_ROLES = new Set(['textbox', 'searchbox', 'combobox']);
 
-async function selectOptions(page: Page, session: CDPSession, c: Candidate): Promise<string[]> {
+async function selectOptions(session: CDPSession, c: Candidate): Promise<string[]> {
   const { object } = (await session.send('DOM.resolveNode', { backendNodeId: c.backendNodeId })) as { object: { objectId: string } };
   const res = (await session.send('Runtime.callFunctionOn', {
     objectId: object.objectId,
@@ -290,7 +288,7 @@ async function clairicFieldValues(
     const cached = cache.get(signature);
     if (cached) result.set(c, cached);
     else if (c.role === 'combobox') {
-      const options = await selectOptions(page, session, c);
+      const options = await selectOptions(session, c);
       cache.set(signature, options);
       result.set(c, options);
     } else pending.push({ c, key: signature, options: [] });
@@ -363,7 +361,10 @@ async function generatedFieldValues(page: Page, task: Task, r: Run, fields: Cand
     r.trace.push({ generated: c.name, value: text, writer: writerModel });
   });
   const filled = fields.map((c) => [c.name, result.get(c)?.[0]] as const).filter(([, v]) => v);
-  await hud(page, { title: `Writer (${writerModel})`, status: filled.length ? filled.map(([n, v]) => `${n}: "${v}"`).join(' · ') : 'No values needed on this screen' });
+  await hud(page, {
+    title: `Writer (${writerModel})`,
+    status: filled.length ? filled.map(([n, v]) => `${n}: "${v}"`).join(' · ') : 'No values needed on this screen',
+  });
   return result;
 }
 

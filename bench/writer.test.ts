@@ -21,7 +21,11 @@ test('llmWriter sends the task and field keys and prices the reply', async () =>
   let sent = '';
   const transport = async (_id: string, body: unknown) => {
     sent = JSON.stringify(body);
-    return { status: 200, json: { result: { response: '{"f0":"jordan@cloudflare.com","f1":null}', usage: { prompt_tokens: 100, completion_tokens: 10 } } }, text: '' };
+    return {
+      status: 200,
+      json: { result: { response: '{"f0":"jordan@cloudflare.com","f1":null}', usage: { prompt_tokens: 100, completion_tokens: 10 } } },
+      text: '',
+    };
   };
   const res = await Effect.runPromise(llmWriter(transport, 'glm-5.3-flash')({ task: 'jordan at cloudflare dot com', fields }));
   expect(sent).toContain('f0: textbox');
@@ -55,7 +59,16 @@ test('the reference answers pass their own checks', () => {
 });
 
 test('summarize computes accuracy and per-kind counts', () => {
-  const row = (writer: string, passed: boolean, kind: CaseResult['kind']): CaseResult => ({ writer, case: 'x', kind, passed, fieldsPassed: {}, values: {}, costUsd: 0.001, ms: 10 });
+  const row = (writer: string, passed: boolean, kind: CaseResult['kind']): CaseResult => ({
+    writer,
+    case: 'x',
+    kind,
+    passed,
+    fieldsPassed: {},
+    values: {},
+    costUsd: 0.001,
+    ms: 10,
+  });
   const s = summarize([row('a', true, 'compose'), row('a', false, 'compose'), row('b', true, 'normalize')]);
   expect(s.a).toMatchObject({ n: 2, passed: 1, accuracy: 0.5, byKind: { compose: { n: 2, passed: 1 } } });
   expect(s.b?.accuracy).toBe(1);

@@ -2,6 +2,7 @@ import { execSync, spawn, spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { CLEF_MODELS } from '../src/clef.ts';
 import { LLM_MODELS } from '../src/llm.ts';
+import { DEFAULT_WRITER } from './lib.ts';
 
 const id = process.env.DO_RUN ?? new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 const mock = process.env.DO_MOCK === '1';
@@ -50,7 +51,7 @@ runSync('bench/report.ts');
 const dir = `bench/runs/${id}${mock ? '-mock' : ''}`;
 const git = (args: string) => execSync(`git ${args}`, { encoding: 'utf8' }).trim();
 const settings = Object.fromEntries(
-  Object.entries(env)
+  Object.entries({ ...((env.DO_ARMS ?? '').includes('relay') ? { DO_WRITER: DEFAULT_WRITER } : {}), ...env })
     .filter(([key]) => key.startsWith('DO_') && !['DO_RUN', 'DO_CONCURRENCY', 'DO_RECORD'].includes(key))
     .sort(),
 );

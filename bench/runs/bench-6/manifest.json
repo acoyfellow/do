@@ -1,0 +1,31 @@
+{
+  "run": "bench-6",
+  "commit": "46881003d50973d996912e15d6d85926503a5841",
+  "dirty": false,
+  "srcCommit": "2fdd5ead2f2378cf47168ded53400ac507f5b81a",
+  "mock": false,
+  "settings": {
+    "DO_ARMS": "duet,relay:kimi-k2.6",
+    "DO_ONLY_TESTS": "t4-e2e",
+    "DO_REPEATS": "3",
+    "DO_SKIP_CACHE": "1",
+    "DO_T4_CONC": "16",
+    "DO_TASK_SET": "all",
+    "DO_WRITER": "glm-5.3-flash>kimi-k2.6"
+  },
+  "clefModels": {
+    "clef": "@cf/cloudflare/clef",
+    "clef-flash": "@cf/cloudflare/clef-flash",
+    "clef-omni": "@cf/cloudflare/clef-omni"
+  },
+  "llmModels": {
+    "kimi-k2.6": "@cf/moonshotai/kimi-k2.6",
+    "qwen3.8-27b": "@cf/qwen/qwen3.8-27b",
+    "glm-5.3-flash": "@cf/zai-org/glm-5.3-flash",
+    "gemma-4-26b": "@cf/google/gemma-4-26b-a4b-it",
+    "llama-3.2-3b": "@cf/meta/llama-3.2-3b-instruct",
+    "granite-4.0-micro": "@cf/ibm-granite/granite-4.0-h-micro",
+    "claude-opus-5-5": "claude-opus-5-5"
+  },
+  "fixture": "bench/fixtures/app.html"
+}

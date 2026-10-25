@@ -5,8 +5,8 @@ import { Effect } from 'effect';
 import type { ClefModel } from '../src/clef.ts';
 import { chat, coordinateInstruction, firstJson, type LlmModel, screenshotFrame, toViewportPoint } from '../src/llm.ts';
 import { type Candidate, inside } from '../src/perceive.ts';
-import { axCandidates, cdp, groundTruthId, marked, playwrightScreen, screenshot, screenshotAt } from './browser.ts';
 import { type Method, pickTarget } from '../src/steer.ts';
+import { axCandidates, cdp, groundTruthId, marked, playwrightScreen, screenshot, screenshotAt } from './browser.ts';
 import { type Intent, intentsFor } from './intents.ts';
 import { close, jsonl, MOCK, open, pool, runDir, specKey, specs, THINKING, transport } from './lib.ts';
 

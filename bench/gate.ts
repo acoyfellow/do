@@ -61,7 +61,9 @@ if (import.meta.main) {
   if (baseline.writer) {
     const writerDir = `bench/runs/${baseline.writer.run}`;
     const writerManifest = readJson<Manifest>(`${writerDir}/manifest.json`);
-    failures.push(...checkWriterRun(baseline.writer, readJson<WriterRunSummary>(`${writerDir}/summary.json`), writerManifest, srcUnchangedSince(writerManifest.srcCommit)));
+    failures.push(
+      ...checkWriterRun(baseline.writer, readJson<WriterRunSummary>(`${writerDir}/summary.json`), writerManifest, srcUnchangedSince(writerManifest.srcCommit)),
+    );
   }
   for (const failure of failures) console.log(`FAIL ${failure}`);
   const runs = [baseline.run, baseline.writer?.run].filter(Boolean).join(' + ');

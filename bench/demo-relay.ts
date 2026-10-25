@@ -53,5 +53,26 @@ const parts = [
 ];
 const list = `${dir}/list.txt`;
 await Bun.write(list, parts.map((part) => `file '${part}'`).join('\n'));
-run('ffmpeg', ['-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', list, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '24', '-preset', 'slow', '-movflags', '+faststart', out]);
+run('ffmpeg', [
+  '-v',
+  'error',
+  '-y',
+  '-f',
+  'concat',
+  '-safe',
+  '0',
+  '-i',
+  list,
+  '-c:v',
+  'libx264',
+  '-pix_fmt',
+  'yuv420p',
+  '-crf',
+  '24',
+  '-preset',
+  'slow',
+  '-movflags',
+  '+faststart',
+  out,
+]);
 console.log(`${out} ${durationSeconds(out).toFixed(1)}s`);

@@ -1,26 +1,30 @@
 {
-  "run": "bench-5",
+  "run": "bench-6",
   "arms": {
     "relay:kimi-k2.6": {
       "minSuccess": 30,
       "maxUsdPerTask": 0.002
+    },
+    "duet": {
+      "minSuccess": 25,
+      "maxUsdPerTask": 0.002
     }
   },
   "writer": {
-    "run": "writer-2",
+    "run": "writer-3",
     "minCases": 44,
     "writers": {
       "glm-5.3-flash>kimi-k2.6": {
-        "minAccuracy": 0.9772727272727273,
-        "maxUsdPerCase": 0.0001
-      },
-      "glm-5.3-flash": {
-        "minAccuracy": 0.9,
+        "minAccuracy": 0.95,
         "maxUsdPerCase": 0.0001
       },
       "kimi-k2.6": {
         "minAccuracy": 0.9,
         "maxUsdPerCase": 0.0003
+      },
+      "glm-5.3-flash": {
+        "minAccuracy": 0.85,
+        "maxUsdPerCase": 0.0001
       }
     }
   }

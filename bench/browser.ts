@@ -1,6 +1,7 @@
 import type { CDPSession, Page } from 'playwright';
 import type { Device } from '../src/hand.ts';
 import { type Box, type Candidate, center, describe } from '../src/perceive.ts';
+
 export { type Box, type Candidate, center, describe };
 
 const INTERACTIVE = new Set([

@@ -1,35 +1,42 @@
 # do
 
-Computer-use library. A device lists the controls on screen, Clef (a small Cloudflare model) picks one with a probability, the device acts, and Clef checks the result. Clef and Clairic never write text. A large model writes field values only when the task needs new text.
+Computer-use library. A device lists the controls on screen, Clef (a small Cloudflare model) picks one with a probability, the device acts, and Clef checks the result. Clef and Clairic never write text. A writer model fills fields only when the task needs new text.
 
-Import paths: do/hand, do/clef, do/clairic, do/steer, do/llm, do/writer, do/perceive.
+Import paths: do/hand, do/devices/macos, do/clef, do/clairic, do/writer, do/steer, do/llm, do/perceive, do/credentials.
 
-Writer (swappable): `llmWriter(transport, 'kimi-k2.6')({ task, fields: [{ key, label, role }] })` returns `{ values: { [key]: string | null }, costUsd, ms }`. Best measured writer: writerFromSpec(transport, 'glm-5.3-flash>kimi-k2.6'), 43/44 at $0.00009/case. glm writes first; when it leaves a field empty and Clef says the task needs new text, kimi fills only that field.
-
-Use:
+Use on a Mac (build the helper once: swiftc -O native/ax.swift -o native/ax; grant Accessibility to your terminal):
 ```ts
-import { Hand, type Device } from 'do/hand';
-const hand = new Hand(transport, device, { model: 'clef', method: 'hybrid', tau: 0.5, riskTau: 0.5, injectionTau: 0.5, verify: true });
-await hand.outline();                         // short text list of controls
-await hand.act('archive the email from Dana');  // Clef picks, device clicks, Clef verifies; returns a receipt
-await hand.type('SAVE10', 'coupon code');
+import { gatewayTransport } from 'do/clef';
+import { readConfig, readToken } from 'do/credentials';
+import { macosDevice } from 'do/devices/macos';
+import { Hand } from 'do/hand';
+const transport = gatewayTransport({ ...readConfig(), token: readToken() });
+const device = macosDevice({ helper: './native/ax', app: 'Google Chrome' });
+const hand = new Hand(transport, device, { model: 'clef', method: 'ax_text', tau: 0.3, riskTau: 0.5, injectionTau: 0.5, verify: true });
+await hand.outline();                          // text list of controls in the front window
+await hand.act('switch to the termlab tab');   // Clef picks, device presses via accessibility, returns a receipt
+await hand.type('coey.dev', 'the address bar'); // focus, select all, real keystrokes to that app only
 await hand.select('Japanese', 'language');
-await hand.look('is the cart empty?');
+await hand.look('is coey.dev open?');           // p(yes)
 ```
+Receipts start with "Clicked", "Typed", "UNSURE" (did not act) or "BLOCKED" (looks destructive; pass confirm=true only if the user asked).
+
+Writer (swappable): writerFromSpec(transport, 'glm-5.3-flash>kimi-k2.6')({ task, fields: [{ key, label, role }] }) returns { values, costUsd, ms, fellBack }. glm writes first; when it leaves a field empty and Clef says the task needs new text, kimi fills only that field. 42-43/44 on the writer eval at $0.00009/case.
 
 Device contract (implement this to support a new screen):
 ```ts
 interface Device {
   viewport(): { width: number; height: number };
   screenshot(clip?: Box): Promise<string>;           // data URL
-  marked(cands: Candidate[]): Promise<string>;       // screenshot with numbered boxes
+  marked(cands: Candidate[]): Promise<string>;
   gridShot(region: Box, n?: number): Promise<{ img: string; cells: Record<string, Box> }>;
   candidates(): Promise<Candidate[]>;                // { id, role, name, x, y, w, h, backendNodeId }
   click(p: { x: number; y: number }): Promise<void>;
+  press?(c: Candidate): Promise<void>;               // preferred over click when present
   typeInto(c: Candidate, text: string): Promise<void>;
   setValue(c: Candidate, value: string): Promise<boolean>;
   settle(): Promise<void>;
 }
 ```
 
-Not included: no built-in device yet (the benchmark browser device is bench/browser.ts; native macOS is next), no MCP server. Benchmark and gate: bench/, bun run gate.
+Bench: bench/, bun run gate (fails if results are stale or worse than bench/baseline.json). Not included: MCP server, CLI, desktop tasks in the bench, Windows/Linux devices.
