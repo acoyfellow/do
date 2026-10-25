@@ -1,7 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { Effect } from 'effect';
-import { gatewayTransport } from '../src/clef.ts';
-import { ask } from '../src/clef.ts';
+import { ask, gatewayTransport } from '../src/clef.ts';
 import { readConfig, readToken } from '../src/credentials.ts';
 
 type Node = { id: string; role: string; name: string; x: number; y: number; w: number; h: number };
@@ -22,7 +21,7 @@ const INTENTS: Intent[] = [
   { app: 'Finder', intent: 'open the tag editor', expect: (n) => n.name.startsWith('Tags') },
 ];
 
-const dump = (app: string): Node[] => JSON.parse(execFileSync(`${import.meta.dir}/ax-dump`, [app], { encoding: 'utf8' })).candidates;
+const dump = (app: string): Node[] => JSON.parse(execFileSync(`${import.meta.dir}/ax`, ['snapshot', app], { encoding: 'utf8' })).candidates;
 const describe = (n: Node) => `${n.role.replace(/^AX/, '').toLowerCase()} "${n.name.replace(/\s+/g, ' ').slice(0, 80)}"`;
 
 function shortlist(nodes: Node[]): Node[] {
