@@ -1,0 +1,69 @@
+bench/baseline.json
+  s_a90e6f4617f964::t_d2192d82947251 2,7-10,14,18,24-27
+bench/browser.ts
+  s_a90e6f4617f964::t_7458d8d840c4d7 4
+bench/check-fallback.ts
+  s_a90e6f4617f964::t_e9320adbd0fe5f 13-16,18-20,23-29,32-36
+bench/demo-relay.ts
+  s_a90e6f4617f964::t_02996413680307 56-77
+bench/fallback.test.ts
+  s_a90e6f4617f964::t_b915c481eba43f 15-21,30-32,40-42,50-52
+bench/gate.ts
+  s_a90e6f4617f964::t_09533d3ec4416a 64-66
+bench/lib.ts
+  s_a90e6f4617f964::t_2ec266c67ab14c 94,99-105
+bench/run-all.ts
+  s_a90e6f4617f964::t_248b199153089c 5,54
+bench/runs/bench-6/REPORT.md
+  s_a90e6f4617f964::t_a4298fa36092f6 1-56
+bench/runs/bench-6/manifest.json
+  s_a90e6f4617f964::t_836ec30ff88012 1-31
+bench/runs/bench-6/summary.json
+  s_a90e6f4617f964::t_d9d4d7a051707c 1-35
+bench/runs/bench-6/t4.jsonl
+  s_a90e6f4617f964::t_a4e7e6a5aee788 1-210
+bench/runs/bench-6/timing.json
+  s_a90e6f4617f964::t_a22ffa96753415 1-11
+bench/runs/writer-3/REPORT.md
+  s_a90e6f4617f964::t_9c960527aaacfb 1-9
+bench/runs/writer-3/manifest.json
+  s_a90e6f4617f964::t_a364c7b1245e44 1-14
+bench/runs/writer-3/summary.json
+  s_a90e6f4617f964::t_dedec0e00be532 1-95
+bench/runs/writer-3/writer.jsonl
+  s_a90e6f4617f964::t_c7e7eda876e590 1-132
+bench/t1-grounding.ts
+  s_a90e6f4617f964::t_b7a95e9c8e78e4 9
+bench/t3-verify.ts
+  s_a90e6f4617f964::t_c522e39070efcf 6
+bench/t4-e2e.ts
+  s_a90e6f4617f964::t_6c73b5dd0c01ba 9,14-16,263,291,364-367
+bench/t5-safety.ts
+  s_a90e6f4617f964::t_2d0abb33b92ca2 6
+bench/writer-cases.ts
+  s_a90e6f4617f964::t_77a301ea340168 54-102,117-123,125-131,133-139,141-154,156-211,213-240,242-262,264-270,273-279,284-290,292-298
+bench/writer-eval.ts
+  s_a90e6f4617f964::t_3a7ff7d4613f28 2,107-115,139-142
+bench/writer.test.ts
+  s_a90e6f4617f964::t_ea4ae9457ffe3e 24-28,62-71
+llms.txt
+  s_a90e6f4617f964::t_86ead9c4257827 3,5,7,9-18,20,22-24,31,35,42
+package.json
+  s_a90e6f4617f964::t_026da6d4a251be 54-55,59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4fede5a062e7a83e9626cd0d63d1b77ad5652323",
+  "prompts": {},
+  "sessions": {
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
