@@ -1,0 +1,21 @@
+native/grounding.ts
+  s_a90e6f4617f964::t_385f3e4103743c 3,24
+native/run.ts
+  s_a90e6f4617f964::t_0ba4fee20ea3d4 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "46881003d50973d996912e15d6d85926503a5841",
+  "prompts": {},
+  "sessions": {
+    "s_a90e6f4617f964": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a16017-51a0-7338-8762-5c58263ca8af",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Coeyman <acoyfellow@users.noreply.github.com>"
+    }
+  }
+}
