@@ -72,7 +72,7 @@ func roots(of app: NSRunningApplication) -> [AXUIElement] {
     return windows + (menuBar.map { [$0] } ?? [])
 }
 
-func snapshot(_ app: NSRunningApplication) -> Snapshot {
+func snapshot(_ app: NSRunningApplication, onlyFront: Bool) -> Snapshot {
     let started = Date()
     var nodes: [Node] = []
     var visited = 0
@@ -86,7 +86,10 @@ func snapshot(_ app: NSRunningApplication) -> Snapshot {
         for (index, child) in children(element).enumerated() { walk(child, path: path + [index]) }
     }
     let windows = roots(of: app)
-    for (index, root) in windows.enumerated() { walk(root, path: [index]) }
+    let front = frontWindowIndex(app)
+    for (index, root) in windows.enumerated() where onlyFront == false || index == front || index == windows.count - 1 {
+        walk(root, path: [index])
+    }
     return Snapshot(app: app.localizedName ?? "?", pid: app.processIdentifier, windows: windows.count, visited: visited, ms: Int(Date().timeIntervalSince(started) * 1000), candidates: nodes)
 }
 
@@ -127,13 +130,56 @@ func clickAt(x: Double, y: Double) -> Outcome {
 
 let keyCodes: [String: CGKeyCode] = ["return": 36, "tab": 48, "escape": 53, "space": 49, "down": 125, "up": 126]
 
-func pressKey(_ name: String) -> Outcome {
+func pressKey(_ name: String, to app: NSRunningApplication) -> Outcome {
     guard let code = keyCodes[name] else { return Outcome(ok: false, detail: "unknown key \(name)") }
+    guard NSWorkspace.shared.frontmostApplication?.processIdentifier == app.processIdentifier else {
+        return Outcome(ok: false, detail: "refused: \(app.localizedName ?? "?") is not the frontmost app")
+    }
     let source = CGEventSource(stateID: .hidSystemState)
-    CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: true)?.post(tap: .cghidEventTap)
+    let pid = app.processIdentifier
+    CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: true)?.postToPid(pid)
     usleep(20000)
-    CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: false)?.post(tap: .cghidEventTap)
-    return Outcome(ok: true, detail: "key \(name)")
+    CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: false)?.postToPid(pid)
+    return Outcome(ok: true, detail: "key \(name) to pid \(pid)")
+}
+
+func typeText(_ text: String, to app: NSRunningApplication) -> Outcome {
+    guard NSWorkspace.shared.frontmostApplication?.processIdentifier == app.processIdentifier else {
+        return Outcome(ok: false, detail: "refused: \(app.localizedName ?? "?") is not the frontmost app")
+    }
+    let source = CGEventSource(stateID: .hidSystemState)
+    let pid = app.processIdentifier
+    for scalar in text.utf16 {
+        var unit = scalar
+        for down in [true, false] {
+            let event = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: down)
+            event?.keyboardSetUnicodeString(stringLength: 1, unicodeString: &unit)
+            event?.postToPid(pid)
+            usleep(8000)
+        }
+    }
+    return Outcome(ok: true, detail: "typed \(text.count) characters to pid \(pid)")
+}
+
+func focus(_ element: AXUIElement) -> Outcome {
+    let result = AXUIElementSetAttributeValue(element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
+    usleep(100000)
+    let length = (attribute(element, kAXValueAttribute) as String?)?.utf16.count ?? 0
+    var everything = CFRange(location: 0, length: length)
+    let selected = AXValueCreate(.cfRange, &everything).map { AXUIElementSetAttributeValue(element, kAXSelectedTextRangeAttribute as CFString, $0) }
+    return Outcome(ok: result == .success, detail: "AXFocused \(result.rawValue), selected \(length) chars \(selected?.rawValue ?? -1)")
+}
+
+func frontWindowIndex(_ app: NSRunningApplication) -> Int? {
+    let root = AXUIElementCreateApplication(app.processIdentifier)
+    let windows: [AXUIElement] = attribute(root, kAXWindowsAttribute) ?? []
+    guard let focused: AXUIElement = attribute(root, kAXFocusedWindowAttribute) else { return windows.isEmpty ? nil : 0 }
+    return windows.firstIndex { CFEqual($0, focused) }
+}
+
+func confirm(_ element: AXUIElement) -> Outcome {
+    let result = AXUIElementPerformAction(element, kAXConfirmAction as CFString)
+    return Outcome(ok: result == .success, detail: "AXConfirm \(result.rawValue)")
 }
 
 func emit<T: Encodable>(_ value: T) {
@@ -159,7 +205,14 @@ case "apps":
     emit(apps)
 case "snapshot":
     guard let app = application(named: args.dropFirst().first) else { fail("app not found", code: 3) }
-    emit(snapshot(app))
+    emit(snapshot(app, onlyFront: !args.contains("--all-windows")))
+case "type":
+    guard args.count >= 3, let app = application(named: args[1]) else { fail("usage: ax type <app> <text>", code: 64) }
+    emit(typeText(args[2], to: app))
+case "focus":
+    guard args.count >= 3, let app = application(named: args[1]) else { fail("usage: ax focus <app> <path>", code: 64) }
+    guard let element = resolve(app, path: parsePath(args[2])) else { fail("element not found at \(args[2])", code: 4) }
+    emit(focus(element))
 case "activate":
     guard let app = application(named: args.dropFirst().first) else { fail("app not found", code: 3) }
     emit(Outcome(ok: app.activate(), detail: "activate \(app.localizedName ?? "?")"))
@@ -168,8 +221,12 @@ case "press", "set":
     guard let element = resolve(app, path: parsePath(args[2])) else { fail("element not found at \(args[2])", code: 4) }
     emit(command == "press" ? press(element) : setValue(element, args.count > 3 ? args[3] : ""))
 case "key":
-    guard args.count >= 2 else { fail("usage: ax key <return|tab|escape|space|down|up>", code: 64) }
-    emit(pressKey(args[1]))
+    guard args.count >= 3, let app = application(named: args[1]) else { fail("usage: ax key <app> <return|tab|escape|space|down|up>", code: 64) }
+    emit(pressKey(args[2], to: app))
+case "confirm":
+    guard args.count >= 3, let app = application(named: args[1]) else { fail("usage: ax confirm <app> <path>", code: 64) }
+    guard let element = resolve(app, path: parsePath(args[2])) else { fail("element not found at \(args[2])", code: 4) }
+    emit(confirm(element))
 case "click":
     guard args.count >= 3, let x = Double(args[1]), let y = Double(args[2]) else { fail("usage: ax click <x> <y>", code: 64) }
     emit(clickAt(x: x, y: y))

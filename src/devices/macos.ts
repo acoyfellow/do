@@ -86,7 +86,12 @@ export function smallestContaining(cands: MacosCandidate[], p: { x: number; y: n
   return cands.filter((c) => inside(p, c)).sort((a, b) => a.w * a.h - b.w * b.h)[0];
 }
 
-export function macosDevice(opts: MacosDeviceOptions): Device & { lastActions: string[] } {
+export interface MacosDevice extends Device {
+  readonly lastActions: string[];
+  submit(c: Candidate): Promise<boolean>;
+}
+
+export function macosDevice(opts: MacosDeviceOptions): MacosDevice {
   const appArg = opts.app ?? '-';
   let last: MacosCandidate[] = [];
   const lastActions: string[] = [];
@@ -139,15 +144,28 @@ export function macosDevice(opts: MacosDeviceOptions): Device & { lastActions: s
     },
     typeInto: async (c, text) => {
       const target = c as MacosCandidate;
-      const outcome = await helper<AxOutcome>('set', appArg, target.path, text);
-      lastActions.push(`set ${target.role} "${target.name}": ${outcome.detail}`);
-      if (!outcome.ok) throw new Error(`could not set text: ${outcome.detail}`);
+      if (appArg === '-') throw new Error('typing needs a named app so keystrokes go only to it');
+      const focused = await helper<AxOutcome>('focus', appArg, target.path);
+      lastActions.push(`focus ${target.role} "${target.name}": ${focused.detail}`);
+      if (!focused.ok) throw new Error(`could not focus ${target.role} "${target.name}": ${focused.detail}`);
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      const typed = await helper<AxOutcome>('type', appArg, text);
+      lastActions.push(typed.detail);
+      if (!typed.ok) throw new Error(`could not type: ${typed.detail}`);
     },
     setValue: async (c, value) => {
       const target = c as MacosCandidate;
       const outcome = await helper<AxOutcome>('set', appArg, target.path, value);
       lastActions.push(`set ${target.role} "${target.name}": ${outcome.detail}`);
       return outcome.ok;
+    },
+    submit: async (c) => {
+      const target = c as MacosCandidate;
+      if (appArg === '-') return false;
+      lastActions.push(`submit ${target.role} "${target.name}"`);
+      const key = await helper<AxOutcome>('key', appArg, 'return').catch(() => ({ ok: false, detail: 'key failed' }));
+      lastActions.push(`return key: ${key.detail}`);
+      return key.ok;
     },
     settle: () => new Promise((resolve) => setTimeout(resolve, 400)),
   };
